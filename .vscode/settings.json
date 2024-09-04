@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "clinic",
+            "database": "${workspaceFolder:PyTHORD 3.0}/clinic.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

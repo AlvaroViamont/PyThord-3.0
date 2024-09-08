@@ -215,15 +215,18 @@ class Analytic_View (General_View):
             pass
     
     def change_data_radiobuttom_selected (self):
-        if not self.stride_view_top_components_right_canvas.data_transformed:
-            self.controller.transform_data()
         self.stride_view_top_components_right_canvas.clear_list()
         if self.plot_view_var.get():
+            if not self.stride_view_top_components_right_canvas.data_transformed:
+                self.controller.transform_data()
+            self.stride_view_top_components_right_canvas.clear_list()
             self.stride_view_top_components_right_canvas.data_collected = self.stride_view_top_components_right_canvas.data_transformed.copy()
             self.stride_view_top_components_right_canvas.min = 100
             self.stride_view_top_components_right_canvas.max = 250
             self.upload_plot_radiobuttoms()
         else:
+            if self.stride_view_top_components_right_canvas.data_transformed:
+                self.stride_view_top_components_right_canvas.clear_list()
             self.stride_view_top_components_right_canvas.data_collected = self.stride_view_top_components_right_canvas.data_collected_saved.copy()
             self.stride_view_top_components_right_canvas.min = -60
             self.stride_view_top_components_right_canvas.max = 60

@@ -418,7 +418,7 @@ class AppController:
         return date_string, timestamp_string
     
     def save_raw_stride (self):
-        stride_date, stride_id = self.get_current_date_and_timestamp()
+        stride_date, stride_id = self._get_current_date_and_timestamp()
         stride_document = ''.join((stride_id, '.json'))
         print(stride_document)
         data_dict = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved

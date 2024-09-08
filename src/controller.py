@@ -6,6 +6,7 @@ import serial
 import serial.tools.list_ports as port_lst
 import threading
 import traceback
+import re
 
 
 class AppController:
@@ -356,7 +357,6 @@ class AppController:
                 self.stride_view.stride_view_unique_plot_radiobuttom.configure(state='normal')
                 self.stride_view.stride_view_multiple_plot_radiobuttom.configure(state='normal')
                 self.collected_data = True
-                self.stride_view.stride_view_top_components_right_canvas.transform_data()
             except Exception as e:
                 print("Error receiving data:", e)
                 print("Detalles del error:")
@@ -364,7 +364,54 @@ class AppController:
         thread = threading.Thread(target=data_collection_task)
         thread.start()
 
-    def get_current_date_and_timestamp(self):
+    def _hip_transform_sagital (self, hip_angle):
+        if hip_angle < 0:
+            return 180 - abs(hip_angle)
+        else:
+            return 180 + abs(hip_angle)
+    
+    def _knee_transform_sagital (self, hip_angle, knee_angle):
+        if hip_angle < 0:
+            return 180 - abs(hip_angle) + abs(knee_angle)
+        else:
+            return 180 + abs(hip_angle) - abs(knee_angle)
+    
+    def _hip_transform_frontal (self):
+        pass
+    
+    def _knee_transform_frontal (self):
+        pass
+
+    def _split_on_uppercase(self, s):
+        return re.findall(r'[A-Z][a-z]*', s)
+    
+    def transform_data (self):
+        self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
+        for key in self.stride_view.stride_view_top_components_right_canvas.data_collected_saved.keys():
+            words = self._split_on_uppercase(key)
+            if words[-1] == 'Sagital':
+                if words[0] == 'C':
+                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda hip: self._hip_transform_sagital(hip), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
+                    print(f'{key} transformado')
+                elif words[0] == 'R':
+                    hip_key = 'C'+''.join(words[1:])
+                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda hip, knee: self._knee_transform_sagital(hip, knee), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[hip_key], self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
+                    print(f'{key} transformado')
+            elif words[-1] == 'Frontal':
+                if words[0] == 'C':
+                    # hip_transform_frontal
+                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
+                    print(f'{key} transformado')
+                elif words[0] == 'R':
+                    # knee_transform_frontal
+                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
+                    print(f'{key} transformado')
+            else:
+                self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
+                print(f'{key} transformado')
+        print(self.stride_view.stride_view_top_components_right_canvas.data_transformed)
+    
+    def _get_current_date_and_timestamp(self):
         now = datetime.now()
         date_string = now.strftime("%d/%m/%Y")
         timestamp_string = now.strftime("%d%m%Y%H%M%S")

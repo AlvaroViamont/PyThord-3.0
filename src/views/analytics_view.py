@@ -215,11 +215,11 @@ class Analytic_View (General_View):
             pass
     
     def change_data_radiobuttom_selected (self):
+        if not self.stride_view_top_components_right_canvas.data_transformed:
+            self.controller.transform_data()
         self.stride_view_top_components_right_canvas.clear_list()
         if self.plot_view_var.get():
             self.stride_view_top_components_right_canvas.data_collected = self.stride_view_top_components_right_canvas.data_transformed.copy()
-            print('------------------------------------')
-            print(self.stride_view_top_components_right_canvas.data_collected)
             self.stride_view_top_components_right_canvas.min = 100
             self.stride_view_top_components_right_canvas.max = 250
             self.upload_plot_radiobuttoms()
@@ -259,53 +259,6 @@ class PlotFrame():
                 'RIIndex':[], 'RITime(ms)':[], 'RISagital':[], 'RIFrontal':[],
                 'CIIndex':[], 'CITime(ms)':[], 'CISagital':[], 'CIFrontal':[]
                                 }
-    
-    def hip_transform_sagital (self, hip_angle):
-        if hip_angle < 0:
-            return 180 - abs(hip_angle)
-        else:
-            return 180 + abs(hip_angle)
-    
-    def knee_transform_sagital (self, hip_angle, knee_angle):
-        if hip_angle < 0:
-            return 180 - abs(hip_angle) + abs(knee_angle)
-        else:
-            return 180 + abs(hip_angle) - abs(knee_angle)
-    
-    def hip_transform_frontal (self):
-        pass
-    
-    def knee_transform_frontal (self):
-        pass
-
-    def split_on_uppercase(self, s):
-        return re.findall(r'[A-Z][a-z]*', s)
-    
-    def transform_data (self):
-        self.data_collected_saved = self.data_collected.copy()
-        for key in self.data_collected_saved.keys():
-            words = self.split_on_uppercase(key)
-            if words[-1] == 'Sagital':
-                if words[0] == 'C':
-                    self.data_transformed[key] = list(map(lambda hip: self.hip_transform_sagital(hip), self.data_collected_saved[key]))
-                    print(f'{key} transformado')
-                elif words[0] == 'R':
-                    hip_key = 'C'+''.join(words[1:])
-                    self.data_transformed[key] = list(map(lambda hip, knee: self.knee_transform_sagital(hip, knee), self.data_collected_saved[hip_key], self.data_collected_saved[key]))
-                    print(f'{key} transformado')
-            elif words[-1] == 'Frontal':
-                if words[0] == 'C':
-                    # hip_transform_frontal
-                    self.data_transformed[key] = self.data_collected_saved[key]
-                    print(f'{key} transformado')
-                elif words[0] == 'R':
-                    # knee_transform_frontal
-                    self.data_transformed[key] = self.data_collected_saved[key]
-                    print(f'{key} transformado')
-            else:
-                self.data_transformed[key] = self.data_collected_saved[key]
-                print(f'{key} transformado')
-        print(self.data_transformed)
 
     def plot_data(self, x_data, y_data, label):
         self.ax.plot(x_data, y_data, label=label)

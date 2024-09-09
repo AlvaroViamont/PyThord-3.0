@@ -86,6 +86,15 @@ class Analytic_View (General_View):
                 # Left Frame Components
         self.stride_view_components_left_frame = tk.Frame(self.stride_view_components_frame, bg=self.ONYX)
         
+        self.style_config.configure('SComparative.TCombobox', foreground=self.ANTI_FLASH_WHITE, background=self.ONYX, fieldbackground=self.CELADON_GREEN)
+        
+        self.stride_view_time_label = tk.Label(self.stride_view_components_left_frame, text='Tiempo:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
+        
+        self.time_list = [f'{i} segundos' for i in range(3, 11)]
+        self.time_var = tk.StringVar
+        self.stride_view_time_combobox = ttk.Combobox(self.stride_view_components_left_frame, style='SComparative.TCombobox', values=self.time_list, font=self.REGULAR_FONT, state='readonly', textvariable=self.time_var, foreground=self.ONYX, width=15)
+        self.stride_view_time_combobox.current(0)
+        
         self.plot_view_var = tk.IntVar()
         self.stride_view_plot_radiobuttom_label = tk.Label(self.stride_view_components_left_frame, text='Datos:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
         self.stride_view_unique_plot_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Original', variable=self.plot_view_var, value=0, selectcolor=self.BITTERSWEET_SHIMMER, state='disabled', command=self.change_data_radiobuttom_selected)
@@ -110,7 +119,6 @@ class Analytic_View (General_View):
         self.comparative_plot_var = tk.IntVar()
         self.stride_view_comparative_plot_checkbuttom = tk.Checkbutton(self.stride_view_components_left_frame, bg=self.ONYX, fg=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, text="Análisis Comparativo", variable=self.comparative_plot_var, offvalue=0, onvalue=1, activebackground=self.ONYX, activeforeground=self.ANTI_FLASH_WHITE, highlightcolor=self.ONYX, selectcolor=self.BITTERSWEET_SHIMMER)
         
-        self.style_config.configure('SComparative.TCombobox', foreground=self.ANTI_FLASH_WHITE, background=self.ONYX, fieldbackground=self.CELADON_GREEN)
         self.comparative_var = tk.StringVar()
         self.stride_view_search_comparative_plot_combobox = ttk.Combobox(self.stride_view_components_left_frame, style='SComparative.TCombobox', values=['', 'Análisis Realizados'], font=self.REGULAR_FONT, state='disabled', textvariable=self.comparative_var)
 
@@ -133,6 +141,7 @@ class Analytic_View (General_View):
         self.stride_view_serial_conection_buttom.configure(command=self.create_canvas)
         self.stride_view_start_collection_buttom.configure(command=self.controller.collect_data)
         self.stride_view_save_buttom.configure(command=self.save_stride_view)
+        self.stride_view_time_combobox.bind("<<ComboboxSelected>>", self.time_selected)
     
     def build_main_stride_view (self):
         self.widget_pack_forget(self.root)
@@ -160,21 +169,23 @@ class Analytic_View (General_View):
         self.stride_view_components_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.stride_view_components_left_frame.pack(side=tk.LEFT, fill='y')
         self.stride_view_components_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        self.stride_view_plot_radiobuttom_label.grid(column=0, row=0, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_unique_plot_radiobuttom.grid(column=0, row=1, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_multiple_plot_radiobuttom.grid(column=1, row=1, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_joints_radiobuttom_label.grid(column=0, row=4, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_hip_joint_radiobuttom.grid(column=0, row=5, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_knee_joint_radiobuttom.grid(column=1, row=5, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_motion_planes_radiobuttom_label.grid(column=0, row=2, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_frontal_motion_planes_radiobuttom.grid(column=0, row=3, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_sagittal_motion_planes_radiobuttom.grid(column=1, row=3, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_laterality_radiobuttom_label.grid(column=0, row=6, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_left_laterality_radiobuttom.grid(column=0, row=7, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_right_laterality_radiobuttom.grid(column=1, row=7, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_ignore_laterality_radiobuttom.grid(column=2, row=7, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_comparative_plot_checkbuttom.grid(column=0, row=8, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_search_comparative_plot_combobox.grid(column=0, row=9, columnspan=3, padx=5, pady=10, sticky='w')
+        self.stride_view_time_label.grid(column=0, row=0, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_time_combobox.grid(column=1, row=0, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_plot_radiobuttom_label.grid(column=0, row=1, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_unique_plot_radiobuttom.grid(column=0, row=2, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_multiple_plot_radiobuttom.grid(column=1, row=2, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_motion_planes_radiobuttom_label.grid(column=0, row=3, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_frontal_motion_planes_radiobuttom.grid(column=0, row=4, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_sagittal_motion_planes_radiobuttom.grid(column=1, row=4, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_joints_radiobuttom_label.grid(column=0, row=5, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_hip_joint_radiobuttom.grid(column=0, row=6, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_knee_joint_radiobuttom.grid(column=1, row=6, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_laterality_radiobuttom_label.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_left_laterality_radiobuttom.grid(column=0, row=8, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_right_laterality_radiobuttom.grid(column=1, row=8, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_ignore_laterality_radiobuttom.grid(column=2, row=8, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_comparative_plot_checkbuttom.grid(column=0, row=9, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_search_comparative_plot_combobox.grid(column=0, row=10, columnspan=3, padx=5, pady=10, sticky='w')
         self.stride_view_left_components_right_frame_separator.pack(side=tk.LEFT, fill='y')
         self.stride_view_top_components_right_frame.pack(side=tk.TOP, fill='both', expand=True)
         self.stride_view_bottom_components_right_frame.pack(side=tk.BOTTOM, fill='x')
@@ -215,7 +226,6 @@ class Analytic_View (General_View):
             pass
     
     def change_data_radiobuttom_selected (self):
-        self.stride_view_top_components_right_canvas.clear_list()
         if self.plot_view_var.get():
             if not self.stride_view_top_components_right_canvas.data_transformed:
                 self.controller.transform_data()
@@ -236,6 +246,10 @@ class Analytic_View (General_View):
         if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos?'):
             self.controller.save_raw_stride()
 
+    def time_selected (self, event):
+        num = self.stride_view_time_combobox.get().split(" ")
+        time = int(num[0])*100
+        self.controller.data_size = time
 
 class PlotFrame():
     def __init__(self, parent):

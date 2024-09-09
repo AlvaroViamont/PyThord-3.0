@@ -24,13 +24,13 @@ class AppController:
         self.patient_age = None
         
         self.speed = '115200'
+        self.data_size = 300
         self.connection_status = True
         self.port = None
         self.connection = None
         self.reader = None
         self.writer = None
         self.collected_data = False
-        self.data_size = kwarg['data_size']
         
         self.final_data_collected = None
         
@@ -293,7 +293,7 @@ class AppController:
         """
         self.connection.reset_input_buffer()
         self.connection.reset_output_buffer()
-        self.connection.write(b'a')  # Enviar señal para iniciar la recolección de datos
+        self.connection.write(f'{self.data_size}'.encode('utf-8'))  # Enviar señal para iniciar la recolección de datos
 
         def data_collection_task ():
             self.stride_view.stride_view_top_components_right_canvas.clear_list()
@@ -306,51 +306,52 @@ class AppController:
                 while True:
                         # Leer la línea completa de datos
                     self.data_colecteted = self.connection.readline().decode('UTF-8')
-                    # Separar la línea en sus componentes
-                    decoder, cont, x, y = self.data_colecteted.strip().split(',')
-                    cont = int(cont)
-                    time = cont*15
-                    x = float(x)
-                    y = float(y)
-                    if decoder == "N":
-                        if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex']:
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex'].append(cont)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RDTime(ms)'].append(time)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RDSagital'].append(x)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RDFrontal'].append(y)
-                    elif decoder == "P":
-                        if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex']:
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex'].append(cont)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CDTime(ms)'].append(time)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CDSagital'].append(x)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CDFrontal'].append(y)
-                    elif decoder == "M":
-                        if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex']:
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex'].append(cont)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RITime(ms)'].append(time)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RISagital'].append(x*-1)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['RIFrontal'].append(y*-1)
-                    elif decoder == "O":
-                        if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex']:
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex'].append(cont)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CITime(ms)'].append(time)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CISagital'].append(x*-1)
-                            self.stride_view.stride_view_top_components_right_canvas.data_collected['CIFrontal'].append(y*-1)
-                    
-                    self.stride_view.stride_view_serial_data_taked_label.config(text=f'ID: {decoder} Contador: {cont} X: {x} Y: {y}')
-                    self.stride_view.stride_view_serial_data_taked_label.update_idletasks()
-                        # Graficar los datos recolectados en tiempo real
-                    graph_type =self.stride_view.motion_planes_var.get()
-                    joint = self.stride_view.joints_var.get()
-                    laterality = self.stride_view.laterality_var.get()
-                    self.stride_view.stride_view_top_components_right_canvas.update_plot(graph_type, joint, laterality)
-                    try:
-                        if all(self.stride_view.stride_view_top_components_right_canvas.data_collected[key][-1] == self.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
-                            self.connection.reset_input_buffer()
-                            self.connection.reset_output_buffer()
-                            break
-                    except Exception as e:
-                        pass
+                    if self.data_colecteted:
+                        # Separar la línea en sus componentes
+                        decoder, cont, x, y = self.data_colecteted.strip().split(',')
+                        cont = int(cont)
+                        time = cont*10
+                        x = int(x)
+                        y = int(y)
+                        if decoder == "N":
+                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex']:
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex'].append(cont)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDTime(ms)'].append(time)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDSagital'].append(x)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDFrontal'].append(y)
+                        elif decoder == "P":
+                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex']:
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex'].append(cont)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDTime(ms)'].append(time)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDSagital'].append(x)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDFrontal'].append(y)
+                        elif decoder == "M":
+                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex']:
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex'].append(cont)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RITime(ms)'].append(time)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RISagital'].append(x*-1)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RIFrontal'].append(y*-1)
+                        elif decoder == "O":
+                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex']:
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex'].append(cont)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CITime(ms)'].append(time)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CISagital'].append(x*-1)
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CIFrontal'].append(y*-1)
+                        
+                        self.stride_view.stride_view_serial_data_taked_label.config(text=f'ID: {decoder} Contador: {cont} X: {x} Y: {y}')
+                        self.stride_view.stride_view_serial_data_taked_label.update_idletasks()
+                            # Graficar los datos recolectados en tiempo real
+                        graph_type =self.stride_view.motion_planes_var.get()
+                        joint = self.stride_view.joints_var.get()
+                        laterality = self.stride_view.laterality_var.get()
+                        self.stride_view.stride_view_top_components_right_canvas.update_plot(graph_type, joint, laterality)
+                        try:
+                            if all(self.stride_view.stride_view_top_components_right_canvas.data_collected[key][-1] == self.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
+                                self.connection.reset_input_buffer()
+                                self.connection.reset_output_buffer()
+                                break
+                        except Exception as e:
+                            pass
                 self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
                 self.stride_view.stride_view_save_buttom.configure(state='normal')
                 self.stride_view.stride_view_to_doc_buttom.configure(state='normal')
@@ -371,10 +372,11 @@ class AppController:
             return 180 + abs(hip_angle)
     
     def _knee_transform_sagital (self, hip_angle, knee_angle):
+        convert = True
         if hip_angle < 0:
-            return 180 - abs(hip_angle) + abs(knee_angle)
-        else:
             return 180 + abs(hip_angle) - abs(knee_angle)
+        else:
+            return 180 - abs(hip_angle) + abs(knee_angle)
     
     def _hip_transform_frontal (self):
         pass
@@ -396,7 +398,7 @@ class AppController:
                 elif words[0] == 'R':
                     hip_key = 'C'+''.join(words[1:])
                     self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda hip, knee: self._knee_transform_sagital(hip, knee), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[hip_key], self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
-                    print(f'{key} transformado')
+                    print(f'{key} {hip_key} transformado')
             elif words[-1] == 'Frontal':
                 if words[0] == 'C':
                     # hip_transform_frontal

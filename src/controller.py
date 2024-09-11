@@ -1,4 +1,10 @@
 import models.encrypt as nc
+from models.patient import Patient
+from models.stride import Stride
+from models.user import User
+from views.user_view import User_View
+from views.patient_view import Patient_View
+from views.analytics_view import Analytic_View
 from paths import create_patient_structure, save_dict_to_json, open_patient_folder, delete_patient_structure
 import tkinter as tk
 from datetime import datetime
@@ -10,13 +16,13 @@ import re
 
 
 class AppController:
-    def __init__(self, **kwarg):
-        self.user_db = kwarg['user_model']
-        self.patient_db = kwarg['patient_model']
-        self.stride_db = kwarg['stride_model']
-        self.user_view = kwarg['user_view']
-        self.patient_view = kwarg['patient_view']
-        self.stride_view = kwarg['stride_view']
+    def __init__(self, user_model:User, patient_model:Patient, stride_model:Stride, user_view:User_View=None, patient_view:Patient_View=None, stride_view:Analytic_View=None):
+        self.user_db = user_model
+        self.patient_db = patient_model
+        self.stride_db = stride_model
+        self.user_view = user_view
+        self.patient_view = patient_view
+        self.stride_view = stride_view
         self.login_direction = -1
         self.login_user = None
         self.patient_ci = None
@@ -349,6 +355,7 @@ class AppController:
                             if all(self.stride_view.stride_view_top_components_right_canvas.data_collected[key][-1] == self.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
                                 self.connection.reset_input_buffer()
                                 self.connection.reset_output_buffer()
+                                self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
                                 break
                         except Exception as e:
                             pass
@@ -388,30 +395,23 @@ class AppController:
         return re.findall(r'[A-Z][a-z]*', s)
     
     def transform_data (self):
-        self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
         for key in self.stride_view.stride_view_top_components_right_canvas.data_collected_saved.keys():
             words = self._split_on_uppercase(key)
             if words[-1] == 'Sagital':
                 if words[0] == 'C':
                     self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda hip: self._hip_transform_sagital(hip), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
-                    print(f'{key} transformado')
                 elif words[0] == 'R':
                     hip_key = 'C'+''.join(words[1:])
                     self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda hip, knee: self._knee_transform_sagital(hip, knee), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[hip_key], self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
-                    print(f'{key} {hip_key} transformado')
             elif words[-1] == 'Frontal':
                 if words[0] == 'C':
                     # hip_transform_frontal
                     self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
-                    print(f'{key} transformado')
                 elif words[0] == 'R':
                     # knee_transform_frontal
                     self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
-                    print(f'{key} transformado')
             else:
                 self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
-                print(f'{key} transformado')
-        print(self.stride_view.stride_view_top_components_right_canvas.data_transformed)
     
     def _get_current_date_and_timestamp(self):
         now = datetime.now()
@@ -422,7 +422,6 @@ class AppController:
     def save_raw_stride (self):
         stride_date, stride_id = self._get_current_date_and_timestamp()
         stride_document = ''.join((stride_id, '.json'))
-        print(stride_document)
         data_dict = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved
         stride_description = ''
         save_dict_to_json(data_dict, str(self.patient_ci), stride_id)

@@ -39,3 +39,9 @@ def delete_patient_structure (ci):
 def open_patient_folder (ci):
     folder_path = os.path.join(PATIENT_FOLDER, ci)
     os.startfile(folder_path)
+
+def get_file (ci, name):
+    return os.path.join(PATIENT_FOLDER, ci, 'data', name)
+
+def get_patient_doc_file (ci, document):
+    return os.path.join(PATIENT_FOLDER, ci, document)

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     user_model = User (con)
     patient_model = Patient(con)
     stride_model = Stride(con)
-    app_controller = AppController (user_model=user_model, patient_model=patient_model, stride_model=stride_model, user_view=None, patient_view=None, stride_view=None)
+    app_controller = AppController (user_model=user_model, patient_model=patient_model, stride_model=stride_model)
     user_view = User_View (root, app_controller)
     patient_view = Patient_View(root, app_controller)
     stride_view = Analytic_View(root, app_controller)

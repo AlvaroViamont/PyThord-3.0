@@ -71,7 +71,7 @@ for nlist in my_data.new_data.keys():
             c = c + 1
 fig, ax = plt.subplots()
 
-def plot_data(x_data, y_data, label):
+'''def plot_data(x_data, y_data, label):
         ax.plot(x_data, y_data, label=label)
         plt.ylim(min(y_data)-20, max(y_data)+20)
         plt.xlim(0, 5250)
@@ -91,4 +91,4 @@ plot_data(my_data.new_data['RDTime(ms)'], my_data.new_data['RDSagital'], "Rodill
 plot_data(my_data.new_data['RITime(ms)'][:-1], my_data.new_data['RISagital'], "Rodilla Izquierda Sagital")
 ax.grid(True)
 ax.legend()
-plt.show()
+plt.show()'''

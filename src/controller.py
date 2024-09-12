@@ -356,6 +356,7 @@ class AppController:
                                 self.connection.reset_input_buffer()
                                 self.connection.reset_output_buffer()
                                 self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
+                                self._control_data_rows()
                                 break
                         except Exception as e:
                             pass
@@ -372,6 +373,47 @@ class AppController:
         thread = threading.Thread(target=data_collection_task)
         thread.start()
 
+    def _control_data_rows(self):
+        data_structure = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved
+        for keys in data_structure.keys():
+            if 'Index' in keys:
+                if data_structure[keys][-1] < self.data_size:
+                    self._insert_component(-1, keys[:2])
+                for control in range(1, self.data_size):
+                    if data_structure[keys][control-1] != control:
+                        self._insert_component(control, keys[:2])
+    
+    def _insert_component(self, index:int, key:str):
+        real_index = index-1
+        index_key = ''.join((key, 'Index'))
+        time_key = ''.join((key, 'Time(ms)'))
+        x_key = ''.join((key, 'Sagital'))
+        y_key = ''.join((key, 'Frontal'))
+        if index ==1:
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[index_key].insert(real_index, index)
+            time = 15
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[time_key].insert(real_index, time)
+            x = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key][0]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key].insert(real_index, x)
+            y = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key][0]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key].insert(real_index, y)
+        elif index == -1:
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[index_key].append(self.data_size)
+            time = self.data_size*15
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[time_key].append(time)
+            x = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key][-1]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key].append(x)
+            y = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key][-1]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key].append(y)
+        else:
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[index_key].insert(real_index, index)
+            time = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[time_key][real_index]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[time_key].insert(real_index, time)
+            x = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key][real_index]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key].insert(real_index, x)
+            y = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key][real_index]
+            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key].insert(real_index, y)
+
     def _hip_transform_sagital (self, hip_angle):
         if hip_angle < 0:
             return 180 - abs(hip_angle)
@@ -379,7 +421,6 @@ class AppController:
             return 180 + abs(hip_angle)
     
     def _knee_transform_sagital (self, hip_angle, knee_angle):
-        convert = True
         if hip_angle < 0:
             return 180 + abs(hip_angle) - abs(knee_angle)
         else:

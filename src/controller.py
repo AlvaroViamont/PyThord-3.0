@@ -351,15 +351,15 @@ class AppController:
                         joint = self.stride_view.joints_var.get()
                         laterality = self.stride_view.laterality_var.get()
                         self.stride_view.stride_view_top_components_right_canvas.update_plot(graph_type, joint, laterality)
-                        try:
-                            if all(self.stride_view.stride_view_top_components_right_canvas.data_collected[key][-1] == self.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
-                                self.connection.reset_input_buffer()
-                                self.connection.reset_output_buffer()
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
-                                self._control_data_rows()
-                                break
-                        except Exception as e:
-                            pass
+                    try:
+                        if all(self.stride_view.stride_view_top_components_right_canvas.data_collected[key][-1] == self.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
+                            self.connection.reset_input_buffer()
+                            self.connection.reset_output_buffer()
+                            self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
+                            self._control_data_rows()
+                            break
+                    except Exception as e:
+                        pass
                 self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
                 self.stride_view.stride_view_save_buttom.configure(state='normal')
                 self.stride_view.stride_view_to_doc_buttom.configure(state='normal')

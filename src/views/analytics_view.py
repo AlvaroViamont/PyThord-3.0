@@ -4,7 +4,6 @@ from .general_view import General_View
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import numpy as np
-import re
 
 
 # Aplicar el estilo personalizado
@@ -141,6 +140,7 @@ class Analytic_View (General_View):
         self.stride_view_serial_conection_buttom.configure(command=self.create_canvas)
         self.stride_view_start_collection_buttom.configure(command=self.controller.collect_data)
         self.stride_view_save_buttom.configure(command=self.save_stride_view)
+        self.stride_view_to_doc_buttom.configure(command=self.create_report_buttom)
         self.stride_view_time_combobox.bind("<<ComboboxSelected>>", self.time_selected)
     
     def build_main_stride_view (self):
@@ -250,6 +250,10 @@ class Analytic_View (General_View):
         num = self.stride_view_time_combobox.get().split(" ")
         time = int(num[0])*100
         self.controller.data_size = time
+    
+    def create_report_buttom(self):
+        if self.ask_yes_no('Generar reporte', '¿Quiere generar un reporte?'):
+            self.controller.make_report_pdf()
 
 class PlotFrame():
     def __init__(self, parent):

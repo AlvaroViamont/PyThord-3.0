@@ -6,6 +6,7 @@ from models.database_core import BBDD
 from models.user import User
 from models.patient import Patient
 from models.stride import Stride
+from models.report import PDF
 import tkinter as tk
 
 
@@ -15,7 +16,8 @@ if __name__ == "__main__":
     user_model = User (con)
     patient_model = Patient(con)
     stride_model = Stride(con)
-    app_controller = AppController (user_model=user_model, patient_model=patient_model, stride_model=stride_model)
+    report_pdf = PDF()
+    app_controller = AppController (user_model=user_model, patient_model=patient_model, stride_model=stride_model, report_pdf=report_pdf)
     user_view = User_View (root, app_controller)
     patient_view = Patient_View(root, app_controller)
     stride_view = Analytic_View(root, app_controller)

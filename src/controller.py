@@ -2,6 +2,7 @@ import models.encrypt as nc
 from models.patient import Patient
 from models.stride import Stride
 from models.user import User
+from models.report import PDF
 from views.user_view import User_View
 from views.patient_view import Patient_View
 from views.analytics_view import Analytic_View
@@ -16,10 +17,11 @@ import re
 
 
 class AppController:
-    def __init__(self, user_model:User, patient_model:Patient, stride_model:Stride, user_view:User_View=None, patient_view:Patient_View=None, stride_view:Analytic_View=None):
+    def __init__(self, user_model:User, patient_model:Patient, stride_model:Stride, report_pdf:PDF, user_view:User_View=None, patient_view:Patient_View=None, stride_view:Analytic_View=None):
         self.user_db = user_model
         self.patient_db = patient_model
         self.stride_db = stride_model
+        self.report_pdf = report_pdf
         self.user_view = user_view
         self.patient_view = patient_view
         self.stride_view = stride_view
@@ -467,6 +469,35 @@ class AppController:
         stride_description = ''
         save_dict_to_json(data_dict, str(self.patient_ci), stride_id)
         self.stride_db.create_stride(stride_id, stride_date, stride_document, stride_description, self.patient_ci)
+    
+    def _make_report_data(self):
+        original = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved
+        tranformed = self.stride_view.stride_view_top_components_right_canvas.data_transformed
+        data = {
+            'Time(ms)': original['CDTime(ms)'],
+            'CDSagital':original['CDSagital'],
+            'CDFrontal':original['CDFrontal'],
+            'RDSagital':original['RDSagital'],
+            'RDFrontal':original['RDFrontal'],
+            'CISagital':original['CISagital'],
+            'CIFrontal':original['CIFrontal'],
+            'RISagital':original['RISagital'],
+            'RIFrontal':original['RIFrontal'],
+            'TCDSagital':tranformed['CDSagital'],
+            'TCDFrontal':tranformed['CDFrontal'],
+            'TRDSagital':tranformed['RDSagital'],
+            'TRDFrontal':tranformed['RDFrontal'],
+            'TCISagital':tranformed['CISagital'],
+            'TCIFrontal':tranformed['CIFrontal'],
+            'TRISagital':tranformed['RISagital'],
+            'TRIFrontal':tranformed['RIFrontal']
+        }
+        return data
+    
+    def make_report_pdf(self):
+        self.report_pdf.patient_data = str(self.patient_ci)
+        self.report_pdf.report_date, _ = self._get_current_date_and_timestamp()
+        self.report_pdf.build(self._make_report_data())
 
 
 

@@ -1,6 +1,7 @@
 from fpdf import FPDF
 import matplotlib.pyplot as plt
 import io
+import tempfile
 import numpy as np
 from PIL import Image
 from datetime import datetime
@@ -20,6 +21,29 @@ colors = {
 }
 
 custom_style = {
+    "axes.facecolor": colors["OUTER_SPACE"],
+    "axes.edgecolor": colors["ONYX"],
+    "axes.labelcolor": colors["ANTI_FLASH_WHITE"],
+    "xtick.color": colors["EART_YELLOW"],
+    "ytick.color": colors["EART_YELLOW"],
+    "text.color": colors["ANTI_FLASH_WHITE"],
+    "figure.facecolor": colors["ONYX"],
+    "figure.edgecolor": colors["ONYX"],
+    "grid.color": colors["CELADON_GREEN"],
+    "lines.linewidth": 2.5,
+    "lines.color": colors["BITTERSWEET_SHIMMER"],
+    "patch.edgecolor": colors["DEEP_CARMINE_PINK"],
+    "patch.facecolor": colors["BITTERSWEET_SHIMMER"],
+    "axes.prop_cycle": plt.cycler('color', [
+        colors["EART_YELLOW"],
+        colors["BITTERSWEET_SHIMMER"],
+        colors["CELADON_GREEN"],
+        colors["DEEP_CARMINE_PINK"],
+        colors["ANTI_FLASH_WHITE"]
+    ])
+}
+
+custom_style_2 = {
     "axes.facecolor": colors["ANTI_FLASH_WHITE"],  
     "axes.edgecolor": colors["ONYX"],
     "axes.labelcolor": colors["ONYX"],  
@@ -34,15 +58,13 @@ custom_style = {
     "patch.edgecolor": colors["SMOKY_TOPAZ"],
     "patch.facecolor": colors["BITTERSWEET_SHIMMER"],
     "axes.prop_cycle": plt.cycler('color', [
-        colors["ONYX"],           
-        colors["CELADON_GREEN"],     
-        colors["DEEP_CARMINE_PINK"], 
+        colors["OUTER_SPACE"],           
+        colors["DEEP_CARMINE_PINK"],     
+        colors["SMOKY_TOPAZ"], 
         colors["BITTERSWEET_SHIMMER"], 
         colors["EART_YELLOW"]
     ])
 }
-
-plt.rcParams.update(custom_style)
 
 class PDF(FPDF):
     def __init__(self, patient_data:dict = None, doctor_contact:str = None, report_date:str = None):
@@ -50,8 +72,9 @@ class PDF(FPDF):
         self.patient_data = patient_data
         self.doctor_contact = doctor_contact
         self.report_date = report_date
+        self.data_len = 3000
         self.logo_path = IMG_LOGO_PATH
-        self.set_auto_page_break(auto=True, margin=15)
+        self.set_auto_page_break(auto=True, margin=17)
     
     def header(self):
         self.set_fill_color(74, 88, 89)
@@ -64,7 +87,7 @@ class PDF(FPDF):
         self.set_text_color(240, 240, 240)
         self.set_font('Arial', 'B', 14)
         self.cell(0, 0, f'Fecha: {self.report_date}', 0, 1, 'R')
-        self.ln(10)
+        self.ln(15)
 
     def footer(self):
         self.set_y(-15)
@@ -95,7 +118,7 @@ class PDF(FPDF):
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         x_min = 0
-        x_max = 3500
+        x_max = self.data_len
         x_ticks = np.arange(x_min, x_max +20, 50)
         plt.xticks(x_ticks)
         plt.grid(True)
@@ -119,42 +142,40 @@ class PDF(FPDF):
         self.ln(10)
         self.image(img_buffer, x=10, w=180, h=90)
         self.ln()
-        print(title)
     
     def _create_comparative_plot_analytic_section(self, x_column, y1_column, y2_column, title, xlabel, ylabel):
         plt.figure(figsize=(8, 4))
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         x_min = 0
-        x_max = 3500
-        x_ticks = np.arange(x_min, x_max +20, 50)
+        x_max = self.data_len
+        x_ticks = np.arange(x_min, x_max + 20, 100)
         plt.xticks(x_ticks)
         plt.grid(True)
         plt.plot(x_column, y1_column, label='Data 1')
         plt.plot(x_column, y2_column, label='Data 2')
         plt.legend()
 
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        plt.close()
-        buf.seek(0)
+        # Crear un archivo temporal
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+            # Guardar la imagen temporalmente
+            plt.savefig(temp_file.name, format='png')
+            plt.close()
 
-        image = Image.open(buf)
-        img_buffer = io.BytesIO()
-        image.save(img_buffer, format='PNG')
-        img_buffer.seek(0)
-        self.set_font('Arial', 'B', 16)
-        self.set_text_color(50, 55, 59)
-        self.ln(10)
-        self.cell(0, 0, f'{title}', 0, 1, 'C', True)
-        self.set_font('Arial', '', 12)
-        self.ln(10)
-        self.image(img_buffer, x=10, w=180, h=90)
-        self.ln()
-        print(title)
+            # Especificar el nombre del archivo temporal a FPDF
+            self.set_font('Arial', 'B', 16)
+            self.set_text_color(50, 55, 59)
+            self.ln(10)
+            self.cell(0, 0, f'{title}', 0, 1, 'C', True)
+            self.set_font('Arial', '', 12)
+            self.ln(10)
+
+            # Usar el archivo temporal para agregar la imagen
+            self.image(temp_file.name, x=10, w=180, h=90)
+            self.ln()
     
     def _create_table_section(self, data_dict:dict, motion_planes:str):
-        self.ln(10)
+        self.add_page()
         self.set_font('Arial', 'B', 12)
         self.set_fill_color(72, 88, 89)
         self.set_text_color(250, 184, 96)
@@ -193,33 +214,22 @@ class PDF(FPDF):
         return timestamp_string
 
     def build(self, data:dict):
+        plt.rcParams.update(custom_style_2)
         self._first_page()
-        # self.add_page()
-        # self._create_plot_analytic_section(data['Time(ms)'], data['CDSagital'], 'Cadera Derecha plano Sagital', 'Tiempo (ms)', 'CDSagital')
-        # self._create_plot_analytic_section(data['Time(ms)'], data['CDFrontal'], 'Cadera Derecha plano Frontal', 'Tiempo (ms)', 'CDFrontal')
-        # self.add_page()
-        # self._create_plot_analytic_section(data['Time(ms)'], data['RDSagital'], 'Rodilla Derecha plano Sagital', 'Tiempo (ms)', 'RDSagital')
-        # self._create_plot_analytic_section(data['Time(ms)'], data['RDFrontal'], 'Rodilla Derecha plano Frontal', 'Tiempo (ms)', 'RDFrontal')
-        # self.add_page()
-        # self._create_plot_analytic_section(data['Time(ms)'], data['CISagital'], 'Cadera Izquierda plano Sagital', 'Tiempo (ms)', 'CISagital')
-        # self._create_plot_analytic_section(data['Time(ms)'], data['CIFrontal'], 'Cadera Izquierda plano Frontal', 'Tiempo (ms)', 'CIFrontal')
-        # self.add_page()
-        # self._create_plot_analytic_section(data['Time(ms)'], data['RISagital'], 'Rodilla Izquierda plano Sagital', 'Tiempo (ms)', 'RISagital')
-        # self._create_plot_analytic_section(data['Time(ms)'], data['RIFrontal'], 'Rodilla Izquierda plano Frontal', 'Tiempo (ms)', 'RIFrontal')
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['CDSagital'], data['CISagital'], 'Caderas en el plano Sagital', 'Tiempo (ms)', 'CD vs CI datos Puros')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['CDFrontal'], data['CIFrontal'], 'Caderas en el plano Frontal', 'Tiempo (ms)', 'CD vs CI datos Puros')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['CDSagital'], data['CISagital'], 'Caderas en el plano Sagital data Original', 'Tiempo (ms)', 'CD vs CI')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['CDFrontal'], data['CIFrontal'], 'Caderas en el plano Frontal data Original', 'Tiempo (ms)', 'CD vs CI')
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['RDSagital'], data['RISagital'], 'Rodilla en el plano Sagital', 'Tiempo (ms)', 'RD vs RI datos Puros')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['RDFrontal'], data['RIFrontal'], 'Rodilla en el plano Frontal', 'Tiempo (ms)', 'RD vs RI datos Puros')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['RDSagital'], data['RISagital'], 'Rodilla en el plano Sagital data Original', 'Tiempo (ms)', 'RD vs RI')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['RDFrontal'], data['RIFrontal'], 'Rodilla en el plano Frontal data Original', 'Tiempo (ms)', 'RD vs RI')
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TCDSagital'], data['TCISagital'], 'Caderas en el plano Sagital', 'Tiempo (ms)', 'CD vs CI datos Transformados')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TCDFrontal'], data['TCIFrontal'], 'Caderas en el plano Frontal', 'Tiempo (ms)', 'CD vs CI datos Transformados')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TCDSagital'], data['TCISagital'], 'Caderas en el plano Sagital data Transformada', 'Tiempo (ms)', 'CD vs CI')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TCDFrontal'], data['TCIFrontal'], 'Caderas en el plano Frontal data Transformada', 'Tiempo (ms)', 'CD vs CI')
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TRDSagital'], data['TRISagital'], 'Rodilla en el plano Sagital', 'Tiempo (ms)', 'RD vs RI datos Transformados')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TRDFrontal'], data['TRIFrontal'], 'Rodilla en el plano Frontal', 'Tiempo (ms)', 'RD vs RI datos Transformados')
-        self.add_page()
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TRDSagital'], data['TRISagital'], 'Rodilla en el plano Sagital data Transformada', 'Tiempo (ms)', 'RD vs RI')
+        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TRDFrontal'], data['TRIFrontal'], 'Rodilla en el plano Frontal data Transformada', 'Tiempo (ms)', 'RD vs RI')
         self._create_table_section(data, 'Sagital')
-        self.add_page()
         self._create_table_section(data, 'Frontal')
-        self.output(get_patient_doc_file(self.patient_data['ci'], self._get_current_date_and_timestamp()))
+        plt.rcParams.update(custom_style)
+        pdf_path = get_patient_doc_file(self.patient_data['ci'], self._get_current_date_and_timestamp())
+        self.output(pdf_path)

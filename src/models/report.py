@@ -149,7 +149,7 @@ class PDF(FPDF):
         plt.ylabel(ylabel)
         x_min = 0
         x_max = self.data_len
-        x_ticks = np.arange(x_min, x_max + 20, 50)
+        x_ticks = np.arange(x_min, x_max + 20, 100)
         plt.xticks(x_ticks)
         plt.grid(True)
         plt.plot(x_column, y1_column, label='Data 1')

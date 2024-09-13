@@ -316,39 +316,41 @@ class AppController:
                     self.data_colecteted = self.connection.readline().decode('UTF-8')
                     if self.data_colecteted:
                         # Separar la línea en sus componentes
-                        decoder, cont, x, y = self.data_colecteted.strip().split(',')
-                        cont = int(cont)
-                        time = cont*10
-                        x = int(x)
-                        y = int(y)
-                        if decoder == "N":
-                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex']:
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex'].append(cont)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDTime(ms)'].append(time)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDSagital'].append(x)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RDFrontal'].append(y)
-                        elif decoder == "P":
-                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex']:
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex'].append(cont)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDTime(ms)'].append(time)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDSagital'].append(x)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CDFrontal'].append(y)
-                        elif decoder == "M":
-                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex']:
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex'].append(cont)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RITime(ms)'].append(time)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RISagital'].append(x*-1)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['RIFrontal'].append(y*-1)
-                        elif decoder == "O":
-                            if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex']:
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex'].append(cont)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CITime(ms)'].append(time)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CISagital'].append(x*-1)
-                                self.stride_view.stride_view_top_components_right_canvas.data_collected['CIFrontal'].append(y*-1)
-                        
-                        self.stride_view.stride_view_serial_data_taked_label.config(text=f'ID: {decoder} Contador: {cont} X: {x} Y: {y}')
-                        self.stride_view.stride_view_serial_data_taked_label.update_idletasks()
-                            # Graficar los datos recolectados en tiempo real
+                        try:
+                            decoder, cont, x, y = self.data_colecteted.strip().split(',')
+                            cont = int(cont)
+                            time = cont*10
+                            x = int(x)
+                            y = int(y)
+                            if decoder == "N":
+                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex']:
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex'].append(cont)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDTime(ms)'].append(time)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDSagital'].append(x)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDFrontal'].append(y)
+                            elif decoder == "P":
+                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex']:
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex'].append(cont)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDTime(ms)'].append(time)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDSagital'].append(x)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDFrontal'].append(y)
+                            elif decoder == "M":
+                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex']:
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex'].append(cont)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RITime(ms)'].append(time)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RISagital'].append(x*-1)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RIFrontal'].append(y*-1)
+                            elif decoder == "O":
+                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex']:
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex'].append(cont)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CITime(ms)'].append(time)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CISagital'].append(x*-1)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CIFrontal'].append(y*-1)
+                            self.stride_view.stride_view_serial_data_taked_label.config(text=f'ID: {decoder} Contador: {cont} X: {x} Y: {y}')
+                            self.stride_view.stride_view_serial_data_taked_label.update_idletasks()
+                        except Exception as e:
+                            pass
+                        # Graficar los datos recolectados en tiempo real
                         graph_type =self.stride_view.motion_planes_var.get()
                         joint = self.stride_view.joints_var.get()
                         laterality = self.stride_view.laterality_var.get()
@@ -359,6 +361,7 @@ class AppController:
                             self.connection.reset_output_buffer()
                             self.stride_view.stride_view_top_components_right_canvas.data_collected_saved = self.stride_view.stride_view_top_components_right_canvas.data_collected.copy()
                             self._control_data_rows()
+                            self._transform_data()
                             break
                     except Exception as e:
                         pass
@@ -428,16 +431,22 @@ class AppController:
         else:
             return 180 - abs(hip_angle) + abs(knee_angle)
     
-    def _hip_transform_frontal (self):
-        pass
+    def _hip_transform_frontal (self, hip_angle):
+        if hip_angle < 0:
+            return 180 - abs(hip_angle)
+        else:
+            return 180 + abs(hip_angle)
     
-    def _knee_transform_frontal (self):
-        pass
+    def _knee_transform_frontal (self, knee_angle):
+        if knee_angle < 0:
+            return 180 - abs(knee_angle)
+        else:
+            return 180 + abs(knee_angle)
 
     def _split_on_uppercase(self, s):
         return re.findall(r'[A-Z][a-z]*', s)
     
-    def transform_data (self):
+    def _transform_data (self):
         for key in self.stride_view.stride_view_top_components_right_canvas.data_collected_saved.keys():
             words = self._split_on_uppercase(key)
             if words[-1] == 'Sagital':
@@ -449,10 +458,10 @@ class AppController:
             elif words[-1] == 'Frontal':
                 if words[0] == 'C':
                     # hip_transform_frontal
-                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
+                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda hip: self._hip_transform_sagital(hip), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
                 elif words[0] == 'R':
                     # knee_transform_frontal
-                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
+                    self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = list(map(lambda knee: self._hip_transform_sagital(knee), self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]))
             else:
                 self.stride_view.stride_view_top_components_right_canvas.data_transformed[key] = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[key]
     
@@ -495,7 +504,7 @@ class AppController:
         return data
     
     def make_report_pdf(self):
-        self.report_pdf.patient_data = str(self.patient_ci)
+        self.report_pdf.patient_data = {'ci': self.patient_ci, 'name': self.patient_name, 'age': self.patient_age}
         self.report_pdf.report_date, _ = self._get_current_date_and_timestamp()
         self.report_pdf.build(self._make_report_data())
 

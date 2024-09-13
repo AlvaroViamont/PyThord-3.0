@@ -227,8 +227,6 @@ class Analytic_View (General_View):
     
     def change_data_radiobuttom_selected (self):
         if self.plot_view_var.get():
-            if not self.stride_view_top_components_right_canvas.data_transformed:
-                self.controller.transform_data()
             self.stride_view_top_components_right_canvas.clear_list()
             self.stride_view_top_components_right_canvas.data_collected = self.stride_view_top_components_right_canvas.data_transformed.copy()
             self.stride_view_top_components_right_canvas.min = 100

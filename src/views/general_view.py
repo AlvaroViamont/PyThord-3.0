@@ -3,13 +3,13 @@ from tkinter import ttk
 import tkinter.font as fnt
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from controller import AppController
+# from controller import AppController
 from paths import ICON_LOGO_PATH, IMG_F_PP_01_PATH, IMG_F_PP_02_PATH, IMG_F_PP_03_PATH, IMG_F_PP_04_PATH, IMG_F_PP_05_PATH, IMG_F_PP_06_PATH, IMG_F_PP_07_PATH, IMG_F_PP_08_PATH, IMG_LOGO_PATH
 
 
 
 class General_View:
-    def __init__(self, root:tk.Tk, controller:AppController):
+    def __init__(self, root:tk.Tk, controller):
         self.EART_YELLOW = "#FAB860"
         self.ONYX = "#32373B"
         self.OUTER_SPACE = "#4A5859"

@@ -33,7 +33,7 @@ def save_dict_to_json(data_dict, ci, filename):
     print('json guardado')
 
 def delete_patient_structure (ci):
-    folder_path = os.path.join(PATIENT_FOLDER, ci, 'data')
+    folder_path = os.path.join(PATIENT_FOLDER, ci)
     shutil.rmtree(folder_path)
     
 def open_patient_folder (ci):

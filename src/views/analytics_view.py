@@ -216,8 +216,11 @@ class Analytic_View (General_View):
                 pass
             self.stride_view_top_components_right_canvas = PlotFrame(self.stride_view_top_components_right_frame)
         else:
-            self.stride_view_serial_data_taked_label.config(text='')
-            self.stride_view_top_components_right_canvas.destroy_plot()
+            try:
+                self.stride_view_serial_data_taked_label.config(text='')
+                self.stride_view_top_components_right_canvas.destroy_plot()
+            except:
+                pass
 
     def upload_plot_radiobuttoms (self):
         try:

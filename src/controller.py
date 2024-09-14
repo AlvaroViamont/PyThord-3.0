@@ -6,7 +6,7 @@ from models.report import PDF
 from views.user_view import User_View
 from views.patient_view import Patient_View
 from views.analytics_view import Analytic_View
-from paths import create_patient_structure, save_dict_to_json, open_patient_folder, delete_patient_structure
+from paths import create_patient_structure, save_dict_to_json, open_patient_folder, delete_patient_structure, open_pdf_document
 import tkinter as tk
 from datetime import datetime
 import serial
@@ -504,9 +504,10 @@ class AppController:
         return data
     
     def make_report_pdf(self):
-        self.report_pdf.patient_data = {'ci': self.patient_ci, 'name': self.patient_name, 'age': self.patient_age}
+        self.report_pdf.patient_data = {'ci': str(self.patient_ci), 'name': self.patient_name, 'age': self.patient_age}
         self.report_pdf.report_date, _ = self._get_current_date_and_timestamp()
-        self.report_pdf.build(self._make_report_data())
+        pdf_path = self.report_pdf.build(self._make_report_data())
+        open_pdf_document(pdf_path)
 
 
 

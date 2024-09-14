@@ -45,3 +45,6 @@ def get_file (ci, name):
 
 def get_patient_doc_file (ci, document):
     return os.path.join(PATIENT_FOLDER, ci, document)
+
+def open_pdf_document (path):
+    os.startfile(path)

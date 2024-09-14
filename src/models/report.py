@@ -149,7 +149,7 @@ class PDF(FPDF):
         plt.ylabel(ylabel)
         x_min = 0
         x_max = self.data_len
-        x_ticks = np.arange(x_min, x_max + 20, 100)
+        x_ticks = np.arange(x_min, x_max + 20, 200)
         plt.xticks(x_ticks)
         plt.grid(True)
         plt.plot(x_column, y1_column, label='Data 1')
@@ -233,3 +233,4 @@ class PDF(FPDF):
         plt.rcParams.update(custom_style)
         pdf_path = get_patient_doc_file(self.patient_data['ci'], self._get_current_date_and_timestamp())
         self.output(pdf_path)
+        return pdf_path

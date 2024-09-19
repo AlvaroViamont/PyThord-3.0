@@ -375,7 +375,7 @@ class AppController:
                 print("Error receiving data:", e)
                 print("Detalles del error:")
                 traceback.print_exc()
-        thread = threading.Thread(target=data_collection_task)
+        thread = threading.Thread(target=data_collection_task, daemon=True)
         thread.start()
 
     def _control_data_rows(self):
@@ -404,7 +404,7 @@ class AppController:
             self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[y_key].insert(real_index, y)
         elif index == -1:
             self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[index_key].append(self.data_size)
-            time = self.data_size*15
+            time = self.data_size*10
             self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[time_key].append(time)
             x = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key][-1]
             self.stride_view.stride_view_top_components_right_canvas.data_collected_saved[x_key].append(x)
@@ -506,6 +506,7 @@ class AppController:
     def make_report_pdf(self):
         self.report_pdf.patient_data = {'ci': str(self.patient_ci), 'name': self.patient_name, 'age': self.patient_age}
         self.report_pdf.report_date, _ = self._get_current_date_and_timestamp()
+        self.report_pdf.data_len = self.data_size
         pdf_path = self.report_pdf.build(self._make_report_data())
         open_pdf_document(pdf_path)
 

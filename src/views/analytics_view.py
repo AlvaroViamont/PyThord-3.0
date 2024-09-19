@@ -89,7 +89,7 @@ class Analytic_View (General_View):
         
         self.stride_view_time_label = tk.Label(self.stride_view_components_left_frame, text='Tiempo:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
         
-        self.time_list = [f'{i} segundos' for i in range(3, 11)]
+        self.time_list = [f'{i} segundos' for i in range(3, 9)]
         self.time_var = tk.StringVar
         self.stride_view_time_combobox = ttk.Combobox(self.stride_view_components_left_frame, style='SComparative.TCombobox', values=self.time_list, font=self.REGULAR_FONT, state='readonly', textvariable=self.time_var, foreground=self.ONYX, width=15)
         self.stride_view_time_combobox.current(0)

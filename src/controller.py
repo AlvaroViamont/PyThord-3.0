@@ -371,6 +371,7 @@ class AppController:
                 self.stride_view.stride_view_unique_plot_radiobuttom.configure(state='normal')
                 self.stride_view.stride_view_multiple_plot_radiobuttom.configure(state='normal')
                 self.collected_data = True
+                return
             except Exception as e:
                 print("Error receiving data:", e)
                 print("Detalles del error:")

@@ -42,8 +42,6 @@ class AppController:
         
         self.final_data_collected = None
         
-        self.data_colecteted = None
-        
     def logup_redirection (self):
         self.login_direction = 0
         self.user_view.login_view()
@@ -310,44 +308,43 @@ class AppController:
             self.stride_view.plot_view_var.set(0)
             self.stride_view.stride_view_unique_plot_radiobuttom.configure(state='disabled')
             self.stride_view.stride_view_multiple_plot_radiobuttom.configure(state='disabled')
+            
             try:
                 while True:
                         # Leer la línea completa de datos
-                    self.data_colecteted = self.connection.readline().decode('UTF-8')
-                    if self.data_colecteted:
+                    lines = self.connection.read_until(b'\n', size=2048).decode('utf-8').splitlines()
+                    for line in lines:
                         # Separar la línea en sus componentes
                         try:
-                            decoder, cont, x, y = self.data_colecteted.strip().split(',')
+                            decoder, cont, x, y = line.strip().split(',')
                             cont = int(cont)
                             time = cont*10
                             x = int(x)
                             y = int(y)
-                            if decoder == "N":
-                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex']:
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex'].append(cont)
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDTime(ms)'].append(time)
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDSagital'].append(x)
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDFrontal'].append(y)
-                            elif decoder == "P":
-                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex']:
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex'].append(cont)
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDTime(ms)'].append(time)
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDSagital'].append(x)
-                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDFrontal'].append(y)
-                            elif decoder == "M":
+                            if decoder == "M":
                                 if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex']:
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['RIIndex'].append(cont)
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['RITime(ms)'].append(time)
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['RISagital'].append(x*-1)
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['RIFrontal'].append(y*-1)
+                            elif decoder == "N":
+                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex']:
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDIndex'].append(cont)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDTime(ms)'].append(time)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDSagital'].append(x)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['RDFrontal'].append(y)
                             elif decoder == "O":
                                 if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex']:
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['CIIndex'].append(cont)
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['CITime(ms)'].append(time)
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['CISagital'].append(x*-1)
                                     self.stride_view.stride_view_top_components_right_canvas.data_collected['CIFrontal'].append(y*-1)
-                            self.stride_view.stride_view_serial_data_taked_label.config(text=f'ID: {decoder} Contador: {cont} X: {x} Y: {y}')
-                            self.stride_view.stride_view_serial_data_taked_label.update_idletasks()
+                            elif decoder == "P":
+                                if cont <= self.data_size and cont not in self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex']:
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDIndex'].append(cont)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDTime(ms)'].append(time)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDSagital'].append(x)
+                                    self.stride_view.stride_view_top_components_right_canvas.data_collected['CDFrontal'].append(y)
                         except Exception as e:
                             pass
                         # Graficar los datos recolectados en tiempo real
@@ -378,6 +375,7 @@ class AppController:
                 traceback.print_exc()
         thread = threading.Thread(target=data_collection_task, daemon=True)
         thread.start()
+        thread.join
 
     def _control_data_rows(self):
         data_structure = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved

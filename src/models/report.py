@@ -5,7 +5,7 @@ import tempfile
 import numpy as np
 from PIL import Image
 from datetime import datetime
-from paths import IMG_LOGO_PATH, get_patient_doc_file
+from paths import IMG_LOGO_PATH, get_patient_doc_file, IMG_R_BBASE, IMG_R_ABASE, IMG_R_ARAW, IMG_R_ATRN, IMG_R_BRAW, IMG_R_BTRN
 
 
 colors = {
@@ -112,6 +112,8 @@ class PDF(FPDF):
         self.cell(0, 0, f'Nombre del Paciente: {self.patient_data['name']}', 0, 1, 'L', True)
         self.ln(5)
         self.cell(0, 0, f'Edad del Paciente: {self.patient_data['age']}', 0, 1, 'L', True)
+        
+        self.ln(5)
     
     def _create_plot_analytic_section(self, x_column, y_column, title, xlabel, ylabel):
         plt.figure(figsize=(8, 4))

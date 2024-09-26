@@ -17,6 +17,13 @@ IMG_F_PP_07_PATH = os.path.join(ASSETS_FOLDER, "image", "f-pp-07.png")
 IMG_F_PP_08_PATH = os.path.join(ASSETS_FOLDER, "image", "f-pp-08.png")
 ICON_LOGO_PATH = os.path.join(ASSETS_FOLDER, "image", "LOGO.ico")
 
+IMG_R_ABASE = os.path.join(ASSETS_FOLDER, "image", "ra_base.png")
+IMG_R_BBASE = os.path.join(ASSETS_FOLDER, "image", "rb_base.png")
+IMG_R_ARAW = os.path.join(ASSETS_FOLDER, "image", "ra_raw_angle.png")
+IMG_R_BRAW = os.path.join(ASSETS_FOLDER, "image", "rb_raw_angle.png")
+IMG_R_ATRN = os.path.join(ASSETS_FOLDER, "image", "ra_trn_angle.png")
+IMG_R_BTRN = os.path.join(ASSETS_FOLDER, "image", "rb_trn_angle.png")
+
 PATIENT_FOLDER = os.path.join(os.path.dirname(SRC_FOLDER), "patients")
 
 def create_patient_structure (ci):

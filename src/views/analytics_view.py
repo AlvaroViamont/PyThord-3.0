@@ -297,29 +297,32 @@ class PlotFrame():
         plt.close(self.fig)
 
     def update_plot(self, graph_type, joint, laterality):
-        self.ax.clear()
-        if graph_type == 0:
-            if joint == 0:
-                if laterality in [0, 1]:
-                    self.plot_data(self.data_collected['CDTime(ms)'], self.data_collected['CDFrontal'], "Cadera Derecha Frontal")
-                if laterality in [0, 2]:
-                    self.plot_data(self.data_collected['CITime(ms)'], self.data_collected['CIFrontal'], "Cadera Izquierda Frontal")
-            if joint == 1:
-                if laterality in [0, 1]:
-                    self.plot_data(self.data_collected['RDTime(ms)'], self.data_collected['RDFrontal'], "Rodilla Derecha Frontal")
-                if laterality in [0, 2]:
-                    self.plot_data(self.data_collected['RITime(ms)'], self.data_collected['RIFrontal'], "Rodilla Izquierda Frontal")
-        if graph_type == 1:
-            if joint == 0:
-                if laterality in [0, 1]:
-                    self.plot_data(self.data_collected['CDTime(ms)'], self.data_collected['CDSagital'], "Cadera Derecha Sagital")
-                if laterality in [0, 2]:
-                    self.plot_data(self.data_collected['CITime(ms)'], self.data_collected['CISagital'], "Cadera Izquierda Sagital")
-            if joint == 1:
-                if laterality in [0, 1]:
-                    self.plot_data(self.data_collected['RDTime(ms)'], self.data_collected['RDSagital'], "Rodilla Derecha Sagital")
-                if laterality in [0, 2]:
-                    self.plot_data(self.data_collected['RITime(ms)'], self.data_collected['RISagital'], "Rodilla Izquierda Sagital")
-        self.ax.grid(True)
-        self.ax.legend()
-        self.canvas.draw()
+        try:
+            self.ax.clear()
+            if graph_type == 0:
+                if joint == 0:
+                    if laterality in [0, 1]:
+                        self.plot_data(self.data_collected['CDTime(ms)'], self.data_collected['CDFrontal'], "Cadera Derecha Frontal")
+                    if laterality in [0, 2]:
+                        self.plot_data(self.data_collected['CITime(ms)'], self.data_collected['CIFrontal'], "Cadera Izquierda Frontal")
+                if joint == 1:
+                    if laterality in [0, 1]:
+                        self.plot_data(self.data_collected['RDTime(ms)'], self.data_collected['RDFrontal'], "Rodilla Derecha Frontal")
+                    if laterality in [0, 2]:
+                        self.plot_data(self.data_collected['RITime(ms)'], self.data_collected['RIFrontal'], "Rodilla Izquierda Frontal")
+            if graph_type == 1:
+                if joint == 0:
+                    if laterality in [0, 1]:
+                        self.plot_data(self.data_collected['CDTime(ms)'], self.data_collected['CDSagital'], "Cadera Derecha Sagital")
+                    if laterality in [0, 2]:
+                        self.plot_data(self.data_collected['CITime(ms)'], self.data_collected['CISagital'], "Cadera Izquierda Sagital")
+                if joint == 1:
+                    if laterality in [0, 1]:
+                        self.plot_data(self.data_collected['RDTime(ms)'], self.data_collected['RDSagital'], "Rodilla Derecha Sagital")
+                    if laterality in [0, 2]:
+                        self.plot_data(self.data_collected['RITime(ms)'], self.data_collected['RISagital'], "Rodilla Izquierda Sagital")
+            self.ax.grid(True)
+            self.ax.legend()
+            self.canvas.draw()
+        except:
+            pass

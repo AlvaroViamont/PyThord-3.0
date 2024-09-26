@@ -312,7 +312,7 @@ class AppController:
             try:
                 while True:
                         # Leer la línea completa de datos
-                    lines = self.connection.read_until(b'\n', size=2048).decode('utf-8').splitlines()
+                    lines = self.connection.read_until(b'\n', size=5000).decode('utf-8').splitlines()
                     count = 0
                     for line in lines:
                         # Separar la línea en sus componentes
@@ -349,7 +349,7 @@ class AppController:
                         except Exception as e:
                             pass
                         # Graficar los datos recolectados en tiempo real
-                        if count%50 == 0:
+                        if count%100 == 0 or count == 0:
                             graph_type =self.stride_view.motion_planes_var.get()
                             joint = self.stride_view.joints_var.get()
                             laterality = self.stride_view.laterality_var.get()
@@ -378,7 +378,6 @@ class AppController:
                 traceback.print_exc()
         thread = threading.Thread(target=data_collection_task, daemon=True)
         thread.start()
-        thread.join()
 
     def _control_data_rows(self):
         data_structure = self.stride_view.stride_view_top_components_right_canvas.data_collected_saved

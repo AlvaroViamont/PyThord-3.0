@@ -73,7 +73,10 @@ class PDF(FPDF):
         self.doctor_contact = doctor_contact
         self.report_date = report_date
         self.data_len = 3000
+        self.cadencia = 0
+        self.promed_time = 1
         self.logo_path = IMG_LOGO_PATH
+        self.data_dict:dict|None = None
         self.set_auto_page_break(auto=True, margin=17)
     
     def header(self):
@@ -100,20 +103,83 @@ class PDF(FPDF):
             self.cell(0, 10, f'Contact: {self.doctor_contact}', 0, 0, 'R')
     
     def _first_page(self):
+        # Configura el tamaño de página Carta
         self.add_page()
-        self.set_font('Arial', 'B', 24)
-        self.set_fill_color(255, 255, 255)
-        self.set_text_color(50, 55, 59)
-        self.ln(35)
-        self.cell(180, 10, 'Análisis de Zancada', 0, 1, 'C', fill=True)
-        self.ln(10)
-        self.set_font('Arial', 'B', 12)
-        self.set_text_color(50, 55, 59)
-        self.cell(0, 0, f'Nombre del Paciente: {self.patient_data['name']}', 0, 1, 'L', True)
-        self.ln(5)
-        self.cell(0, 0, f'Edad del Paciente: {self.patient_data['age']}', 0, 1, 'L', True)
         
+        # Título principal
+        self.set_font('Arial', 'B', 24)
+        self.set_fill_color(255, 255, 255)  # Fondo blanco
+        self.set_text_color(50, 55, 59)  # Color oscuro para el texto # Espacio al principio
+        self.cell(190, 15, 'Análisis de Zancada', 0, 1, 'C', fill=True)
+        self.ln(5)  # Espacio después del título
+        # Información del paciente
+        self.set_font('Arial', 'B', 12)
+        self.set_text_color(50, 55, 59)  # Color oscuro para el texto
+        self.cell(0, 10, f'Nombre del Paciente: {self.patient_data["name"]}', 0, 1, 'L')
+        self.cell(0, 10, f'Edad del Paciente: {self.patient_data["age"]}', 0, 1, 'L')
+        self.cell(0, 10, f'CI: {self.patient_data["ci"]}', 0, 1, 'L')
+        self.ln(10)  # Espacio después de la información del paciente
+
+        # Añadir primera fila de imágenes y datos de cadencia
+        y1 = self.get_y()
+        self.image(IMG_R_ABASE, 10, y1, 50)  # Ajusta el ancho de la imagen a 50
+        self.set_xy(70, y1)
+        self.cell(60, 10, f'Cadencia: {self.cadencia}', 0, 1, 'L')
+        self.set_x(70)
+        self.cell(60, 10, f'Tiempo Promedio: {self.promed_time}', 0, 1, 'L')
+        self.set_xy(140, y1)
+        self.image(IMG_R_BBASE, 150, y1, 50)  # Ajusta el ancho de la imagen a 50
+        self.ln(45)  # Añade espacio después de las imágenes y datos
+
+        # Añadir segunda fila de imágenes y datos del sensor
+        y1 = self.get_y()
+        self.image(IMG_R_ARAW, 10, y1, 50)  # Ajusta el ancho de la imagen
+        self.set_xy(45, y1)
+        self.cell(0, 10, f'A Sensor CIS(min): {max(self.data_dict["CISagital"])}', 0, 1, 'L')
+        self.set_x(45)
+        self.cell(0, 10, f'A Sensor CIS(max): {min(self.data_dict["CISagital"])}', 0, 1, 'L')
+        self.set_x(45)
+        self.cell(0, 10, f'A Sensor RIS(min): {max(self.data_dict["RISagital"])}', 0, 1, 'L')
+        self.set_x(45)
+        self.cell(0, 10, f'A Sensor RIS(max): {min(self.data_dict["RISagital"])}', 0, 1, 'L')
+        self.set_xy(110, y1)
+        self.cell(0, 10, f'A Sensor CDS(min): {max(self.data_dict["CDSagital"])}', 0, 1, 'L')
+        self.set_x(110)
+        self.cell(0, 10, f'A Sensor CDS(max): {min(self.data_dict["CDSagital"])}', 0, 1, 'L')
+        self.set_x(110)
+        self.cell(0, 10, f'A Sensor RDS(min): {max(self.data_dict["RDSagital"])}', 0, 1, 'L')
+        self.set_x(110)
+        self.cell(0, 10, f'A Sensor RDS(max): {min(self.data_dict["RDSagital"])}', 0, 1, 'L')
+        self.image(IMG_R_BRAW, 150, y1, 50)  # Imagen ajustada en la misma fila
+        self.ln(45)  # Espacio después de esta fila
+
+        # Añadir tercera fila de imágenes y datos de la articulación
+        y1 = self.get_y()
+        self.image(IMG_R_ATRN, 10, y1, 50)  # Imagen ajustada
+        self.set_xy(45, y1)
+        self.cell(0, 10, f'A Art. CIS(min): {max(self.data_dict["TCISagital"])}', 0, 1, 'L')
+        self.set_x(45)
+        self.cell(0, 10, f'A Art. CIS(max): {min(self.data_dict["TCISagital"])}', 0, 1, 'L')
+        self.set_x(45)
+        self.cell(0, 10, f'A Art. RIS(min): {max(self.data_dict["TRISagital"])}', 0, 1, 'L')
+        self.set_x(45)
+        self.cell(0, 10, f'A Art. RIS(max): {min(self.data_dict["TRISagital"])}', 0, 1, 'L')
+        self.set_xy(110, y1)
+        self.cell(0, 10, f'A Art. CDS(min): {max(self.data_dict["TCDSagital"])}', 0, 1, 'L')
+        self.set_x(110)
+        self.cell(0, 10, f'A Art. CDS(max): {min(self.data_dict["TCDSagital"])}', 0, 1, 'L')
+        self.set_x(110)
+        self.cell(0, 10, f'A Art. RDS(min): {max(self.data_dict["TRDSagital"])}', 0, 1, 'L')
+        self.set_x(110)
+        self.cell(0, 10, f'A Art. RDS(max): {min(self.data_dict["TRDSagital"])}', 0, 1, 'L')
+        self.image(IMG_R_BTRN, 150, y1, 50)  # Imagen ajustada
+        self.ln(45)  # Espacio después de esta fila
+
+        # Fin de la página
         self.ln(5)
+
+
+        
     
     def _create_plot_analytic_section(self, x_column, y_column, title, xlabel, ylabel):
         plt.figure(figsize=(8, 4))
@@ -216,22 +282,23 @@ class PDF(FPDF):
         return timestamp_string
 
     def build(self, data:dict):
+        self.data_dict = data
         plt.rcParams.update(custom_style_2)
         self._first_page()
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['CDSagital'], data['CISagital'], 'Caderas en el plano Sagital data Original', 'Tiempo (ms)', 'CD vs CI')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['CDFrontal'], data['CIFrontal'], 'Caderas en el plano Frontal data Original', 'Tiempo (ms)', 'CD vs CI')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['CDSagital'], self.data_dict['CISagital'], 'Caderas en el plano Sagital data Original', 'Tiempo (ms)', 'CD vs CI')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['CDFrontal'], self.data_dict['CIFrontal'], 'Caderas en el plano Frontal data Original', 'Tiempo (ms)', 'CD vs CI')
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['RDSagital'], data['RISagital'], 'Rodilla en el plano Sagital data Original', 'Tiempo (ms)', 'RD vs RI')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['RDFrontal'], data['RIFrontal'], 'Rodilla en el plano Frontal data Original', 'Tiempo (ms)', 'RD vs RI')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['RDSagital'], self.data_dict['RISagital'], 'Rodilla en el plano Sagital data Original', 'Tiempo (ms)', 'RD vs RI')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['RDFrontal'], self.data_dict['RIFrontal'], 'Rodilla en el plano Frontal data Original', 'Tiempo (ms)', 'RD vs RI')
+        '''self.add_page()
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['TCDSagital'], self.data_dict['TCISagital'], 'Caderas en el plano Sagital data Transformada', 'Tiempo (ms)', 'CD vs CI')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['TCDFrontal'], self.data_dict['TCIFrontal'], 'Caderas en el plano Frontal data Transformada', 'Tiempo (ms)', 'CD vs CI')
         self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TCDSagital'], data['TCISagital'], 'Caderas en el plano Sagital data Transformada', 'Tiempo (ms)', 'CD vs CI')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TCDFrontal'], data['TCIFrontal'], 'Caderas en el plano Frontal data Transformada', 'Tiempo (ms)', 'CD vs CI')
-        self.add_page()
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TRDSagital'], data['TRISagital'], 'Rodilla en el plano Sagital data Transformada', 'Tiempo (ms)', 'RD vs RI')
-        self._create_comparative_plot_analytic_section(data['Time(ms)'], data['TRDFrontal'], data['TRIFrontal'], 'Rodilla en el plano Frontal data Transformada', 'Tiempo (ms)', 'RD vs RI')
-        self._create_table_section(data, 'Sagital')
-        self._create_table_section(data, 'Frontal')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['TRDSagital'], self.data_dict['TRISagital'], 'Rodilla en el plano Sagital data Transformada', 'Tiempo (ms)', 'RD vs RI')
+        self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['TRDFrontal'], self.data_dict['TRIFrontal'], 'Rodilla en el plano Frontal data Transformada', 'Tiempo (ms)', 'RD vs RI')
+        self._create_table_section(self.data_dict, 'Sagital')
+        self._create_table_section(self.data_dict, 'Frontal')'''
         plt.rcParams.update(custom_style)
         pdf_path = get_patient_doc_file(self.patient_data['ci'], self._get_current_date_and_timestamp())
         self.output(pdf_path)

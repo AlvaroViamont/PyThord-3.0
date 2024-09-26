@@ -349,12 +349,12 @@ class AppController:
                         except Exception as e:
                             pass
                         # Graficar los datos recolectados en tiempo real
-                        if count%100 == 0 or count == 0:
+                        '''if count%100 == 0 or count == 0:
                             graph_type =self.stride_view.motion_planes_var.get()
                             joint = self.stride_view.joints_var.get()
                             laterality = self.stride_view.laterality_var.get()
                             self.stride_view.stride_view_top_components_right_canvas.update_plot(graph_type, joint, laterality)
-                        count+=1
+                        count+=1'''
                     try:
                         if all(self.stride_view.stride_view_top_components_right_canvas.data_collected[key][-1] == self.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
                             self.connection.reset_input_buffer()
@@ -365,6 +365,10 @@ class AppController:
                             break
                     except Exception as e:
                         pass
+                graph_type =self.stride_view.motion_planes_var.get()
+                joint = self.stride_view.joints_var.get()
+                laterality = self.stride_view.laterality_var.get()
+                self.stride_view.stride_view_top_components_right_canvas.update_plot(graph_type, joint, laterality)
                 self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
                 self.stride_view.stride_view_save_buttom.configure(state='normal')
                 self.stride_view.stride_view_to_doc_buttom.configure(state='normal')

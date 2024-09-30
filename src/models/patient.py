@@ -19,7 +19,7 @@ class Patient:
         self.conn = con.conn
         self.cursor = con.cursor
 
-    def create_patient(self, id, name, lastname, bird_date, gender, phone, mail, address):
+    def create_patient(self, id, name, lastname, bird_date, gender, phone, mail, rsize, lsize):
         """
         Inserts a new patient record into the PATIENT table.
 
@@ -34,9 +34,9 @@ class Patient:
             address (str): The patient's home address.
         """
         self.cursor.execute('''INSERT INTO PATIENT (PATIENT_ID, PATIENT_NAME, PATIENT_LASTNAME, PATIENT_DATE, PATIENT_GENDER,
-                                                    PATIENT_PHONE, PATIENT_MAIL, PATIENT_ADDRESS) 
-                                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                            (id, name, lastname, bird_date, gender, phone, mail, address))
+                                                    PATIENT_PHONE, PATIENT_MAIL, PATIENT_RSIZE, PATIENT_LSIZE) 
+                                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                            (id, name, lastname, bird_date, gender, phone, mail, rsize, lsize))
         self.conn.commit()
         
     def get_patient_by_id(self, id):

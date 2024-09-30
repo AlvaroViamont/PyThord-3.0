@@ -43,24 +43,25 @@ class BBDD:
             
             self.cursor.execute('''
                                 CREATE TABLE IF NOT EXISTS PATIENT (
-                                    PATIENT_ID integer PRIMARY KEY,
-                                    PATIENT_NAME text NOT NULL,
-                                    PATIENT_LASTNAME text NOT NULL,
-                                    PATIENT_DATE text,
-                                    PATIENT_GENDER text,
-                                    PATIENT_PHONE text,
-                                    PATIENT_MAIL text,
-                                    PATIENT_ADDRESS text
+                                    PATIENT_ID INTEGER  PRIMARY KEY,
+                                    PATIENT_NAME TEXT NOT NULL,
+                                    PATIENT_LASTNAME TEXT NOT NULL,
+                                    PATIENT_DATE TEXT,
+                                    PATIENT_GENDER TEXT,
+                                    PATIENT_PHONE TEXT,
+                                    PATIENT_MAIL TEXT,
+                                    PATIENT_RSIZE REAL DEFAULT 0.0,
+                                    PATIENT_LSIZE REAL DEFAULT 0.0
                                 )
                                 ''')
             
             self.cursor.execute('''
                                 CREATE TABLE IF NOT EXISTS STRIDE (
-                                    STRIDE_ID integer PRIMARY KEY,
-                                    STRIDE_DATE text,
-                                    STRIDE_DOCUMENT text,
-                                    STRIDE_DESCRIPTION text,
-                                    STRIDE_PATIENT_ID integer,
+                                    STRIDE_ID INTEGER  PRIMARY KEY,
+                                    STRIDE_DATE TEXT,
+                                    STRIDE_DOCUMENT TEXT,
+                                    STRIDE_DESCRIPTION TEXT,
+                                    STRIDE_PATIENT_ID INTEGER ,
                                     FOREIGN KEY (STRIDE_PATIENT_ID) REFERENCES PATIENT(PATIENT_ID)
                                 )
                                 ''')

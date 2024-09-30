@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from .general_view import General_View
+from controllers.patient_controller import PatientController
 
 class Patient_View (General_View):
     
@@ -31,8 +32,10 @@ class Patient_View (General_View):
         self.patient_view_patient_lastname_label = tk.Label(self.patient_view_new_patient_frame, text='Apellidos:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
         self.patient_view_patient_gender_label = tk.Label(self.patient_view_new_patient_frame, text='Género:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
         self.patient_view_patient_contact_information = tk.Label(self.patient_view_new_patient_frame, text='Información de Contacto del Paciente:', foreground=self.EART_YELLOW, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
+        self.patient_view_patient_measures_information = tk.Label(self.patient_view_new_patient_frame, text='Información de las medidas del Paciente:', foreground=self.EART_YELLOW, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
         self.patient_view_patient_phone_label = tk.Label(self.patient_view_new_patient_frame, text='Teléfono:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
-        self.patient_view_patient_direction_label = tk.Label(self.patient_view_new_patient_frame, text='Dirección:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
+        self.patient_view_patient_right_leg_size_label = tk.Label(self.patient_view_new_patient_frame, text='Medida Pierna Derecha:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
+        self.patient_view_patient_left_leg_size_label = tk.Label(self.patient_view_new_patient_frame, text='Medida Pierna Izquierda:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
         self.patient_view_patient_mail_label = tk.Label(self.patient_view_new_patient_frame, text='Correo:', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
                 # New Patients Entrys:
         self.patient_view_patient_ci_entry = tk.Entry(self.patient_view_new_patient_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
@@ -47,7 +50,8 @@ class Patient_View (General_View):
         self.patient_view_patient_gender_male_checkbutton = tk.Radiobutton(self.patient_view_checkbutton_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.OUTER_SPACE, text='M', variable=self.patient_view_check_var, value=1, selectcolor=self.BITTERSWEET_SHIMMER)
         self.patient_view_patient_gender_female_checkbutton = tk.Radiobutton(self.patient_view_checkbutton_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.OUTER_SPACE, text='F', variable=self.patient_view_check_var, value=2, selectcolor=self.BITTERSWEET_SHIMMER)
         self.patient_view_patient_phone_entry = tk.Entry(self.patient_view_new_patient_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
-        self.patient_view_patient_direction_entry = tk.Entry(self.patient_view_new_patient_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
+        self.patient_view_patient_right_leg_size_entry = tk.Entry(self.patient_view_new_patient_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
+        self.patient_view_patient_left_leg_size_entry = tk.Entry(self.patient_view_new_patient_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
         self.patient_view_patient_mail_entry = tk.Entry(self.patient_view_new_patient_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
                 # New Patients Buttoms:
         self.patient_view_buttom_frame = tk.Frame(self.patient_view_new_patient_frame, bg=self.OUTER_SPACE)
@@ -59,7 +63,7 @@ class Patient_View (General_View):
         self.patient_search_view_bottom_frame = tk.Frame(self.patient_view_search_patient_frame, bg=self.OUTER_SPACE)
                 # Top Frame Components
         self.patient_search_view_top_label = tk.Label(self.patient_search_view_top_frame, text='Cédula de Identidad (CI):', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='right')
-        self.patient_search_view_top_entry = tk.Entry(self.patient_search_view_top_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
+        self.patient_search_view_top_entry = tk.Entry(self.patient_search_view_top_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=15)
         self.patient_search_view_top_search_buttom = tk.Button(self.patient_search_view_top_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Buscar")
         self.patient_search_view_top_search_all_buttom = tk.Button(self.patient_search_view_top_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Listar")
                 # Bottom Frame Components
@@ -85,21 +89,29 @@ class Patient_View (General_View):
         self.patient_search_focus_gender_label = tk.Label(self.patient_search_get_gender_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
         self.patient_search_get_phone_frame = tk.Frame(self.patient_search_view_conteiner_frame, bg=self.OUTER_SPACE)
         self.patient_search_get_phone_label = tk.Label(self.patient_search_get_phone_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
-        self.patient_search_focus_phone_entry = tk.Entry(self.patient_search_get_phone_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
+        self.patient_search_focus_phone_entry = tk.Entry(self.patient_search_get_phone_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=20)
         self.patient_search_focus_phone_label = tk.Label(self.patient_search_get_phone_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
         self.patient_search_get_mail_frame = tk.Frame(self.patient_search_view_conteiner_frame, bg=self.OUTER_SPACE)
         self.patient_search_get_mail_label = tk.Label(self.patient_search_get_mail_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
         self.patient_search_focus_mail_label = tk.Label(self.patient_search_get_mail_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
         self.patient_search_focus_mail_entry = tk.Entry(self.patient_search_get_mail_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
-        self.patient_search_get_dir_frame = tk.Frame(self.patient_search_view_conteiner_frame, bg=self.OUTER_SPACE)
-        self.patient_search_get_dir_label = tk.Label(self.patient_search_get_dir_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
-        self.patient_search_focus_dir_label = tk.Label(self.patient_search_get_dir_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
-        self.patient_search_focus_dir_entry = tk.Entry(self.patient_search_get_dir_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=30)
+        
+        self.patient_search_get_right_leg_size_frame = tk.Frame(self.patient_search_view_conteiner_frame, bg=self.OUTER_SPACE)
+        self.patient_search_get_right_leg_size_label = tk.Label(self.patient_search_get_right_leg_size_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
+        self.patient_search_focus_right_leg_size_label = tk.Label(self.patient_search_get_right_leg_size_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
+        self.patient_search_focus_right_leg_size_entry = tk.Entry(self.patient_search_get_right_leg_size_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=10)
+        
+        self.patient_search_get_left_leg_size_frame = tk.Frame(self.patient_search_view_conteiner_frame, bg=self.OUTER_SPACE)
+        self.patient_search_get_left_leg_size_label = tk.Label(self.patient_search_get_left_leg_size_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
+        self.patient_search_focus_left_leg_size_label = tk.Label(self.patient_search_get_left_leg_size_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
+        self.patient_search_focus_left_leg_size_entry = tk.Entry(self.patient_search_get_left_leg_size_frame, font=self.REGULAR_FONT, foreground=self.ONYX, bg=self.ANTI_FLASH_WHITE, width=10)
+        
         self.patient_search_button_gruop_frame = tk.Frame(self.patient_search_view_conteiner_frame, bg=self.OUTER_SPACE)
         self.patient_search_delete_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.BITTERSWEET_SHIMMER, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.BITTERSWEET_SHIMMER, text="Eliminar")
         self.patient_search_update_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Modificar")
         self.patient_search_folder_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Carpeta")
-        self.patient_search_take_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Análisis")
+        self.patient_search_report_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Reportes")
+        self.patient_search_take_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.EART_YELLOW, foreground=self.ONYX, activebackground=self.ONYX, activeforeground=self.EART_YELLOW, text="Análisis")
         self.patient_ci_var = tk.StringVar()
             # Page Components Configure
         self.patient_view_create_buttom.configure(command=self.build_create_patient_view)
@@ -143,10 +155,12 @@ class Patient_View (General_View):
         self.patient_view_patient_name_label.grid(column=0, row=2, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_patient_lastname_label.grid(column=0, row=3, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_patient_gender_label.grid(column=2, row=2, padx=10, pady=10, columnspan=1, sticky='E')
-        self.patient_view_patient_contact_information.grid(column=0, row=4, padx=10, pady=10, columnspan=5, sticky='W')
+        self.patient_view_patient_contact_information.grid(column=0, row=4, padx=10, pady=10, columnspan=2, sticky='W')
+        self.patient_view_patient_measures_information.grid(column=2, row=4, padx=10, pady=10, columnspan=2, sticky='W')
         self.patient_view_patient_phone_label.grid(column=0, row=5, padx=10, pady=10, columnspan=1, sticky='E')
-        self.patient_view_patient_direction_label.grid(column=2, row=5, padx=10, pady=10, columnspan=1, sticky='E')
+        self.patient_view_patient_right_leg_size_label.grid(column=2, row=5, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_patient_mail_label.grid(column=0, row=6, padx=10, pady=10, columnspan=1, sticky='E')
+        self.patient_view_patient_left_leg_size_label.grid(column=2, row=6, padx=10, pady=10, columnspan=1, sticky='E')
             # Entrys Grid
         self.patient_view_patient_ci_entry.grid(column=1, row=1, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_birthdate_frame.grid(column=3, row=1, columnspan=3, sticky='W')
@@ -161,10 +175,11 @@ class Patient_View (General_View):
         self.patient_view_patient_gender_male_checkbutton.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_patient_gender_female_checkbutton.grid(column=1, row=0, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_patient_phone_entry.grid(column=1, row=5, padx=10, pady=10, columnspan=1, sticky='E')
-        self.patient_view_patient_direction_entry.grid(column=3, row=5, padx=10, pady=10, columnspan=3, sticky='E')
+        self.patient_view_patient_right_leg_size_entry.grid(column=3, row=5, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_patient_mail_entry.grid(column=1, row=6, padx=10, pady=10, columnspan=1, sticky='E')
+        self.patient_view_patient_left_leg_size_entry.grid(column=3, row=6, padx=10, pady=10, columnspan=1, sticky='E')
             # Buttoms Grid
-        self.patient_view_buttom_frame.grid(column=3, row=6, columnspan=3, sticky='E')
+        self.patient_view_buttom_frame.grid(column=3, row=7, columnspan=3, sticky='E')
         self.patient_view_cancel_buttom.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='E')
         self.patient_view_register_buttom.grid(column=1, row=0, padx=10, pady=10, columnspan=1, sticky='E')
             # Frame Components Configure        
@@ -185,7 +200,6 @@ class Patient_View (General_View):
         self.patient_view_patient_gender_male_checkbutton.deselect()
         self.patient_view_patient_gender_female_checkbutton.deselect()
         self.patient_view_patient_phone_entry.delete(0, tk.END)
-        self.patient_view_patient_direction_entry.delete(0, tk.END)
         self.patient_view_patient_mail_entry.delete(0, tk.END)
     
     def create_buttom (self):
@@ -208,7 +222,6 @@ class Patient_View (General_View):
             self.patient_view_patient_gender_male_checkbutton.deselect()
             self.patient_view_patient_gender_female_checkbutton.deselect()
             self.patient_view_patient_phone_entry.delete(0, tk.END)
-            self.patient_view_patient_direction_entry.delete(0, tk.END)
             self.patient_view_patient_mail_entry.delete(0, tk.END)
         else:
             self.show_error(create_patient[1], create_patient[2])
@@ -241,7 +254,7 @@ class Patient_View (General_View):
     def build_search_patient_result_view (self):
         self.widget_grid_forget(self.patient_search_view_conteiner_frame)
         if self.patient_search_view_top_entry.get() != '':
-            patient = self.controller.search_pattient_by_ci()
+            patient:PatientController = self.controller.search_pattient_by_ci()
             if patient:
                 self.patient_search_get_ci_frame.grid(column=0, row=0, padx=10, columnspan=1, sticky='W')
                 self.widget_grid_forget(self.patient_search_get_ci_frame)
@@ -255,6 +268,13 @@ class Patient_View (General_View):
                 self.widget_grid_forget(self.patient_search_get_gender_frame)
                 self.patient_search_get_gender_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 self.patient_search_focus_gender_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+                
+                self.patient_search_get_right_leg_size_frame.grid(column=2, row=1, padx=10, columnspan=1, sticky='W')
+                self.widget_grid_forget(self.patient_search_get_right_leg_size_frame)
+                self.patient_search_get_right_leg_size_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
+                self.patient_search_focus_right_leg_size_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+                
+                
                 self.patient_search_get_birthdate_frame.grid(column=0, row=2, padx=10, columnspan=1, sticky='W')
                 self.widget_grid_forget(self.patient_search_get_birthdate_frame)
                 self.patient_search_get_birthdate_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
@@ -263,41 +283,47 @@ class Patient_View (General_View):
                 self.widget_grid_forget(self.patient_search_get_age_frame)
                 self.patient_search_get_age_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 self.patient_search_focus_age_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
-                self.patient_search_get_phone_frame.grid(column=0, row=3, padx=10, columnspan=1, sticky='W')
+                
+                self.patient_search_get_left_leg_size_frame.grid(column=2, row=2, padx=10, columnspan=1, sticky='W')
+                self.widget_grid_forget(self.patient_search_get_left_leg_size_frame)
+                self.patient_search_get_left_leg_size_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
+                self.patient_search_focus_left_leg_size_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+                
+                self.patient_search_get_phone_frame.grid(column=1, row=3, padx=10, columnspan=1, sticky='W')
                 self.widget_grid_forget(self.patient_search_get_phone_frame)
                 self.patient_search_get_phone_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 self.patient_search_focus_phone_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
-                self.patient_search_get_mail_frame.grid(column=1, row=3, padx=10, columnspan=1, sticky='W')
+                self.patient_search_get_mail_frame.grid(column=0, row=3, padx=10, columnspan=1, sticky='W')
                 self.widget_grid_forget(self.patient_search_get_mail_frame)
                 self.patient_search_get_mail_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 self.patient_search_focus_mail_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
-                self.patient_search_get_dir_frame.grid(column=0, row=4, padx=10, columnspan=4, sticky='W')
-                self.widget_grid_forget(self.patient_search_get_dir_frame)
-                self.patient_search_get_dir_label.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
-                self.patient_search_focus_dir_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='WE')
                 self.patient_search_button_gruop_frame.grid(column=0, row=5, padx=10, columnspan=1, sticky='W')
                 self.widget_grid_forget(self.patient_search_button_gruop_frame)
                 self.patient_search_delete_buttom.grid(column=0, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 self.patient_search_update_buttom.grid(column=1, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 self.patient_search_folder_buttom.grid(column=2, row=0, padx=10, pady=10, columnspan=1, sticky='W')
-                self.patient_search_take_buttom.grid(column=3, row=0, padx=10, pady=10, columnspan=1, sticky='W')
+                self.patient_search_report_buttom.grid(column=3, row=0, padx=10, pady=10, columnspan=1, sticky='W')
+                self.patient_search_take_buttom.grid(column=4, row=0, padx=10, pady=10, columnspan=1, sticky='W')
                 
                 self.patient_search_get_ci_label.configure(text='CI: ')
-                self.patient_search_focus_ci_label.configure(text=patient[0])
+                self.patient_search_focus_ci_label.configure(text=str(patient.ci))
                 self.patient_search_get_full_name_label.configure(text='Nombre del Paciente: ')
-                self.patient_search_focus_full_name_label.configure(text=patient[1])
+                self.patient_search_focus_full_name_label.configure(text=patient.name)
                 self.patient_search_get_birthdate_label.configure(text='Fecha de Nacimiento: ')
-                self.patient_search_focus_birthdate_label.configure(text=patient[2])
+                self.patient_search_focus_birthdate_label.configure(text=patient.birthday)
                 self.patient_search_get_age_label.configure(text='Edad: ')
-                self.patient_search_focus_age_label.configure(text=patient[3])
+                self.patient_search_focus_age_label.configure(text=str(patient.age))
                 self.patient_search_get_gender_label.configure(text='Genero: ')
-                self.patient_search_focus_gender_label.configure(text=patient[4])
+                self.patient_search_focus_gender_label.configure(text=patient.gender)
+                self.patient_search_get_right_leg_size_label.configure(text='Medida Pierna Derecha (m): ')
+                self.patient_search_focus_right_leg_size_label.configure(text=patient.right_leg_size)
+                self.patient_search_get_left_leg_size_label.configure(text='Medida Pierna Izquierda (m): ')
+                self.patient_search_focus_left_leg_size_label.configure(text=patient.left_leg_size)
+                
                 self.patient_search_get_phone_label.configure(text='Número: ')
-                self.patient_search_focus_phone_label.configure(text=patient[5])
+                self.patient_search_focus_phone_label.configure(text=patient.phone)
                 self.patient_search_get_mail_label.configure(text='Correo: ')
-                self.patient_search_focus_mail_label.configure(text=patient[6])
-                self.patient_search_get_dir_label.configure(text='Dirección: ')
-                self.patient_search_focus_dir_label.configure(text=patient[7])
+                self.patient_search_focus_mail_label.configure(text=patient.mail)
                 self.patient_search_view_conteiner_frame.update_idletasks()
                 self.patient_search_view_conteiner_canvas.config(scrollregion=self.patient_search_view_conteiner_canvas.bbox("all"))
             else:
@@ -353,10 +379,13 @@ class Patient_View (General_View):
             self.patient_search_focus_phone_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
             self.patient_search_focus_mail_entry.grid_forget()
             self.patient_search_focus_mail_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
-            self.patient_search_focus_dir_entry.grid_forget()
-            self.patient_search_focus_dir_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+            self.patient_search_focus_right_leg_size_entry.grid_forget()
+            self.patient_search_focus_right_leg_size_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+            self.patient_search_focus_left_leg_size_entry.grid_forget()
+            self.patient_search_focus_left_leg_size_label.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
             self.patient_search_folder_buttom.grid(column=2, row=0, padx=10, pady=10, columnspan=1, sticky='W')
-            self.patient_search_take_buttom.grid(column=3, row=0, padx=10, pady=10, columnspan=1, sticky='W')
+            self.patient_search_report_buttom.grid(column=3, row=0, padx=10, pady=10, columnspan=1, sticky='W')
+            self.patient_search_take_buttom.grid(column=4, row=0, padx=10, pady=10, columnspan=1, sticky='W')
             self.patient_search_delete_buttom.configure(text='Eliminar')
             self.patient_search_update_buttom.configure(text='Modificar')
     
@@ -370,11 +399,20 @@ class Patient_View (General_View):
             self.patient_search_focus_mail_entry.insert(0, self.patient_search_focus_mail_label['text'])
             self.patient_search_focus_mail_label.grid_forget()
             self.patient_search_focus_mail_entry.grid(column=1, row=0, pady=10, columnspan=1, sticky='WE')
-            self.patient_search_focus_dir_entry.delete(0, tk.END)
-            self.patient_search_focus_dir_entry.insert(0, self.patient_search_focus_dir_label['text'])
-            self.patient_search_focus_dir_label.grid_forget()
-            self.patient_search_focus_dir_entry.grid(column=1, row=0, pady=10, columnspan=1, sticky='WE')
+            
+            self.patient_search_focus_right_leg_size_entry.delete(0, tk.END)
+            self.patient_search_focus_right_leg_size_entry.insert(0, self.patient_search_focus_right_leg_size_label['text'])
+            self.patient_search_focus_right_leg_size_label.grid_forget()
+            self.patient_search_focus_right_leg_size_entry.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+            
+            self.patient_search_focus_left_leg_size_entry.delete(0, tk.END)
+            self.patient_search_focus_left_leg_size_entry.insert(0, self.patient_search_focus_left_leg_size_label['text'])
+            self.patient_search_focus_left_leg_size_label.grid_forget()
+            self.patient_search_focus_left_leg_size_entry.grid(column=1, row=0, pady=10, columnspan=1, sticky='W')
+            
             self.patient_search_take_buttom.grid_forget()
+            self.patient_search_folder_buttom.grid_forget()
+            self.patient_search_report_buttom.grid_forget()
             self.patient_search_delete_buttom.configure(text='Cancelar')
             self.patient_search_update_buttom.configure(text='Guardar')
         elif self.patient_search_update_buttom['text'] == 'Guardar':
@@ -389,5 +427,4 @@ class Patient_View (General_View):
             self.patient_search_delete_buttom.configure(text='Eliminar')
             self.patient_search_focus_phone_entry.grid_forget()
             self.patient_search_focus_mail_entry.grid_forget()
-            self.patient_search_focus_dir_entry.grid_forget()
             self.build_search_patient_result_view()

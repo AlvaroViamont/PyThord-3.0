@@ -89,15 +89,10 @@ class Analytic_View (General_View):
         
         self.stride_view_time_label = tk.Label(self.stride_view_components_left_frame, text='Tiempo:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
         
-        self.time_list = [f'{i} segundos' for i in range(3, 9)]
+        self.time_list = [f'{i} segundos' for i in range(3, 6)]
         self.time_var = tk.StringVar
         self.stride_view_time_combobox = ttk.Combobox(self.stride_view_components_left_frame, style='SComparative.TCombobox', values=self.time_list, font=self.REGULAR_FONT, state='readonly', textvariable=self.time_var, foreground=self.ONYX, width=15)
         self.stride_view_time_combobox.current(0)
-        
-        self.plot_view_var = tk.IntVar()
-        self.stride_view_plot_radiobuttom_label = tk.Label(self.stride_view_components_left_frame, text='Datos:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
-        self.stride_view_unique_plot_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Original', variable=self.plot_view_var, value=0, selectcolor=self.BITTERSWEET_SHIMMER, state='disabled', command=self.change_data_radiobuttom_selected)
-        self.stride_view_multiple_plot_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Convertir', variable=self.plot_view_var, value=1, selectcolor=self.BITTERSWEET_SHIMMER, state='disabled', command=self.change_data_radiobuttom_selected)
         
         self.motion_planes_var = tk.IntVar()
         self.stride_view_motion_planes_radiobuttom_label = tk.Label(self.stride_view_components_left_frame, text='Planos de Movimiento:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
@@ -171,21 +166,19 @@ class Analytic_View (General_View):
         self.stride_view_components_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         self.stride_view_time_label.grid(column=0, row=0, columnspan=1, padx=5, pady=10, sticky='w')
         self.stride_view_time_combobox.grid(column=1, row=0, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_plot_radiobuttom_label.grid(column=0, row=1, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_unique_plot_radiobuttom.grid(column=0, row=2, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_multiple_plot_radiobuttom.grid(column=1, row=2, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_motion_planes_radiobuttom_label.grid(column=0, row=3, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_frontal_motion_planes_radiobuttom.grid(column=0, row=4, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_sagittal_motion_planes_radiobuttom.grid(column=1, row=4, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_joints_radiobuttom_label.grid(column=0, row=5, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_hip_joint_radiobuttom.grid(column=0, row=6, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_knee_joint_radiobuttom.grid(column=1, row=6, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_laterality_radiobuttom_label.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_left_laterality_radiobuttom.grid(column=0, row=8, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_right_laterality_radiobuttom.grid(column=1, row=8, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_ignore_laterality_radiobuttom.grid(column=2, row=8, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_comparative_plot_checkbuttom.grid(column=0, row=9, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_search_comparative_plot_combobox.grid(column=0, row=10, columnspan=3, padx=5, pady=10, sticky='w')
+
+        self.stride_view_motion_planes_radiobuttom_label.grid(column=0, row=1, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_frontal_motion_planes_radiobuttom.grid(column=0, row=2, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_sagittal_motion_planes_radiobuttom.grid(column=1, row=2, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_joints_radiobuttom_label.grid(column=0, row=3, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_hip_joint_radiobuttom.grid(column=0, row=4, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_knee_joint_radiobuttom.grid(column=1, row=4, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_laterality_radiobuttom_label.grid(column=0, row=5, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_left_laterality_radiobuttom.grid(column=0, row=6, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_right_laterality_radiobuttom.grid(column=1, row=6, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_ignore_laterality_radiobuttom.grid(column=2, row=6, columnspan=1, padx=5, pady=10, sticky='w')
+        self.stride_view_comparative_plot_checkbuttom.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_search_comparative_plot_combobox.grid(column=0, row=8, columnspan=3, padx=5, pady=10, sticky='w')
         self.stride_view_left_components_right_frame_separator.pack(side=tk.LEFT, fill='y')
         self.stride_view_top_components_right_frame.pack(side=tk.TOP, fill='both', expand=True)
         self.stride_view_bottom_components_right_frame.pack(side=tk.BOTTOM, fill='x')
@@ -221,27 +214,15 @@ class Analytic_View (General_View):
                 self.stride_view_top_components_right_canvas.destroy_plot()
             except:
                 pass
+    
+    def new_canvas (self):
+        self.stride_view_top_components_right_canvas = PlotFrame(self.stride_view_top_components_right_frame)
 
     def upload_plot_radiobuttoms (self):
         try:
-            self.stride_view_top_components_right_canvas.update_plot(self.motion_planes_var.get(), self.joints_var.get(), self.laterality_var.get())
+            self.controller.update_plot(self.motion_planes_var.get(), self.joints_var.get(), self.laterality_var.get())
         except:
             pass
-    
-    def change_data_radiobuttom_selected (self):
-        if self.plot_view_var.get():
-            self.stride_view_top_components_right_canvas.clear_list()
-            self.stride_view_top_components_right_canvas.data_collected = self.stride_view_top_components_right_canvas.data_transformed.copy()
-            self.stride_view_top_components_right_canvas.min = 100
-            self.stride_view_top_components_right_canvas.max = 250
-            self.upload_plot_radiobuttoms()
-        else:
-            if self.stride_view_top_components_right_canvas.data_transformed:
-                self.stride_view_top_components_right_canvas.clear_list()
-            self.stride_view_top_components_right_canvas.data_collected = self.stride_view_top_components_right_canvas.data_collected_saved.copy()
-            self.stride_view_top_components_right_canvas.min = -60
-            self.stride_view_top_components_right_canvas.max = 60
-            self.upload_plot_radiobuttoms()
     
     def save_stride_view (self):
         if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos?'):
@@ -250,7 +231,7 @@ class Analytic_View (General_View):
     def time_selected (self, event):
         num = self.stride_view_time_combobox.get().split(" ")
         time = int(num[0])*100
-        self.controller.data_size = time
+        self.controller.data.data_size = time
     
     def create_report_buttom(self):
         if self.ask_yes_no('Generar reporte', '¿Quiere generar un reporte?'):
@@ -258,29 +239,11 @@ class Analytic_View (General_View):
 
 class PlotFrame():
     def __init__(self, parent):
-        self.data_collected = {
-                'RDIndex':[], 'RDTime(ms)':[], 'RDSagital':[], 'RDFrontal':[],
-                'CDIndex':[], 'CDTime(ms)':[], 'CDSagital':[], 'CDFrontal':[],
-                'RIIndex':[], 'RITime(ms)':[], 'RISagital':[], 'RIFrontal':[],
-                'CIIndex':[], 'CITime(ms)':[], 'CISagital':[], 'CIFrontal':[]
-                                }
-        self.data_transformed = {}
-        self.data_collected_saved = {}
-        self.graph_type_var = None
-        self.graph_joint_var = None
         self.fig, self.ax = plt.subplots()
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
         self.min = -60
         self.max = 60
-
-    def clear_list (self):
-        self.data_collected = {
-                'RDIndex':[], 'RDTime(ms)':[], 'RDSagital':[], 'RDFrontal':[],
-                'CDIndex':[], 'CDTime(ms)':[], 'CDSagital':[], 'CDFrontal':[],
-                'RIIndex':[], 'RITime(ms)':[], 'RISagital':[], 'RIFrontal':[],
-                'CIIndex':[], 'CITime(ms)':[], 'CISagital':[], 'CIFrontal':[]
-                                }
 
     def plot_data(self, x_data, y_data, label):
         self.ax.plot(x_data, y_data, label=label)
@@ -295,34 +258,3 @@ class PlotFrame():
         """Método para destruir el canvas y liberar recursos cuando no sea necesario."""
         self.canvas.get_tk_widget().destroy()
         plt.close(self.fig)
-
-    def update_plot(self, graph_type, joint, laterality):
-        try:
-            self.ax.clear()
-            if graph_type == 0:
-                if joint == 0:
-                    if laterality in [0, 1]:
-                        self.plot_data(self.data_collected['CDTime(ms)'], self.data_collected['CDFrontal'], "Cadera Derecha Frontal")
-                    if laterality in [0, 2]:
-                        self.plot_data(self.data_collected['CITime(ms)'], self.data_collected['CIFrontal'], "Cadera Izquierda Frontal")
-                if joint == 1:
-                    if laterality in [0, 1]:
-                        self.plot_data(self.data_collected['RDTime(ms)'], self.data_collected['RDFrontal'], "Rodilla Derecha Frontal")
-                    if laterality in [0, 2]:
-                        self.plot_data(self.data_collected['RITime(ms)'], self.data_collected['RIFrontal'], "Rodilla Izquierda Frontal")
-            if graph_type == 1:
-                if joint == 0:
-                    if laterality in [0, 1]:
-                        self.plot_data(self.data_collected['CDTime(ms)'], self.data_collected['CDSagital'], "Cadera Derecha Sagital")
-                    if laterality in [0, 2]:
-                        self.plot_data(self.data_collected['CITime(ms)'], self.data_collected['CISagital'], "Cadera Izquierda Sagital")
-                if joint == 1:
-                    if laterality in [0, 1]:
-                        self.plot_data(self.data_collected['RDTime(ms)'], self.data_collected['RDSagital'], "Rodilla Derecha Sagital")
-                    if laterality in [0, 2]:
-                        self.plot_data(self.data_collected['RITime(ms)'], self.data_collected['RISagital'], "Rodilla Izquierda Sagital")
-            self.ax.grid(True)
-            self.ax.legend()
-            self.canvas.draw()
-        except:
-            pass

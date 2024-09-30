@@ -26,9 +26,13 @@ IMG_R_BTRN = os.path.join(ASSETS_FOLDER, "image", "rb_trn_angle.png")
 
 PATIENT_FOLDER = os.path.join(os.path.dirname(SRC_FOLDER), "patients")
 
+def get_patient_folder (ci):
+    return os.path.join(PATIENT_FOLDER, ci)
+
 def create_patient_structure (ci):
     analysis_folder = os.path.join(PATIENT_FOLDER, ci, 'data')
     os.makedirs(analysis_folder)
+    return get_patient_folder (ci)
 
 def save_dict_to_json(data_dict, ci, filename):
     folder_path = os.path.join(PATIENT_FOLDER, ci, 'data')

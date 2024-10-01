@@ -19,7 +19,7 @@ colors = {
     "CELADON_GREEN": "#2E8B57",   
     "DEEP_CARMINE_PINK": "#EF3038",
     "SMOKY_TOPAZ": "#935A5C",
-    "WHITE": "#FFFFFF",
+    "WHITE": "#FFFFFF"
 }
 
 custom_style = {
@@ -67,6 +67,7 @@ custom_style_2 = {
         colors["EART_YELLOW"]
     ])
 }
+
 
 class PDF(FPDF):
     def __init__(self):
@@ -132,46 +133,46 @@ class PDF(FPDF):
 
         # Añadir segunda fila de imágenes y datos del sensor
         y1 = self.get_y()
-        self.image(IMG_R_ARAW, 10, y1, 50, 76.2)  # Ajusta el ancho de la imagen
-        self.set_xy(65, y1)
+        self.image(IMG_R_ARAW, 10, y1, 30, 45.5)  # Ajusta el ancho de la imagen
+        self.set_xy(45, y1)
         self.cell(0, 10, f'A Sensor CIS(min): {self.data.stride_angle['MinCI']}', 0, 1, 'L')
-        self.set_x(65)
+        self.set_x(45)
         self.cell(0, 10, f'A Sensor CIS(max): {self.data.stride_angle['MaxCI']}', 0, 1, 'L')
-        self.set_x(65)
+        self.set_x(45)
         self.cell(0, 10, f'A Sensor RIS(min): {self.data.stride_angle['MinRI']}', 0, 1, 'L')
-        self.set_x(65)
+        self.set_x(45)
         self.cell(0, 10, f'A Sensor RIS(max): {self.data.stride_angle['MaxRI']}', 0, 1, 'L')
-        self.set_xy(90, y1)
+        self.set_xy(110, y1)
         self.cell(0, 10, f'A Sensor CDS(min): {self.data.stride_angle['MinCD']}', 0, 1, 'L')
-        self.set_x(90)
+        self.set_x(110)
         self.cell(0, 10, f'A Sensor CDS(max): {self.data.stride_angle['MaxCD']}', 0, 1, 'L')
-        self.set_x(90)
+        self.set_x(110)
         self.cell(0, 10, f'A Sensor RDS(min): {self.data.stride_angle['MinRD']}', 0, 1, 'L')
-        self.set_x(90)
+        self.set_x(110)
         self.cell(0, 10, f'A Sensor RDS(max): {self.data.stride_angle['MaxRD']}', 0, 1, 'L')
-        self.image(IMG_R_BRAW, 150, y1, 50, 76.2)  # Imagen ajustada en la misma fila
+        self.image(IMG_R_BRAW, 150, y1, 30, 45.5)  # Imagen ajustada en la misma fila
         self.ln(45)  # Espacio después de esta fila
 
         # Añadir tercera fila de imágenes y datos de la articulación
         y1 = self.get_y()
-        self.image(IMG_R_ATRN, 10, y1, 50, 76.2)  # Imagen ajustada
-        self.set_xy(65, y1)
+        self.image(IMG_R_ATRN, 10, y1, 30, 45.5)  # Imagen ajustada
+        self.set_xy(45, y1)
         self.cell(0, 10, f'A Art. CIS(min): {self.data.stride_angle['TMinCI']}', 0, 1, 'L')
-        self.set_x(65)
+        self.set_x(45)
         self.cell(0, 10, f'A Art. CIS(max): {self.data.stride_angle['TMaxCI']}', 0, 1, 'L')
-        self.set_x(65)
+        self.set_x(45)
         self.cell(0, 10, f'A Art. RIS(min): {self.data.stride_angle['TMinRI']}', 0, 1, 'L')
-        self.set_x(65)
+        self.set_x(45)
         self.cell(0, 10, f'A Art. RIS(max): {self.data.stride_angle['TMaxRI']}', 0, 1, 'L')
-        self.set_xy(90, y1)
+        self.set_xy(110, y1)
         self.cell(0, 10, f'A Art. CDS(min): {self.data.stride_angle['TMinCD']}', 0, 1, 'L')
-        self.set_x(90)
+        self.set_x(110)
         self.cell(0, 10, f'A Art. CDS(max): {self.data.stride_angle['TMaxCD']}', 0, 1, 'L')
-        self.set_x(90)
+        self.set_x(110)
         self.cell(0, 10, f'A Art. RDS(min): {self.data.stride_angle['TMinRD']}', 0, 1, 'L')
-        self.set_x(90)
+        self.set_x(110)
         self.cell(0, 10, f'A Art. RDS(max): {self.data.stride_angle['TMaxRD']}', 0, 1, 'L')
-        self.image(IMG_R_BTRN, 150, y1, 50, 76.2)  # Imagen ajustada
+        self.image(IMG_R_BTRN, 150, y1, 30, 45.5)  # Imagen ajustada
         self.ln(45)  # Espacio después de esta fila
         # Fin de la página
         self.ln(5)
@@ -207,35 +208,37 @@ class PDF(FPDF):
         self.ln()
     
     def _create_comparative_plot_analytic_section(self, x_column, y1_column, y2_column, title, xlabel, ylabel, p1label, p2label):
-        plt.figure(figsize=(8, 4))
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        x_min = 0
-        x_max = self.data.data_size*10
-        x_ticks = np.arange(x_min, x_max + 50, self.data.data_size//100)
-        plt.xticks(x_ticks)
-        plt.grid(True)
-        plt.plot(x_column, y1_column, label=p1label)
-        plt.plot(x_column, y2_column, label=p2label)
-        plt.legend()
+        self.set_font('Arial', 'B', 16)
+        self.set_text_color(50, 55, 59)
+        self.ln(10)
+        self.cell(0, 0, f'{title}', 0, 1, 'C', True)
+        self.set_font('Arial', '', 12)
+        self.ln(10)
+        
+        with plt.style.context(custom_style_2):
+            plt.figure(figsize=(8, 4))
+            plt.plot(x_column, y1_column, label=p1label)
+            plt.plot(x_column, y2_column, label=p2label)
+            plt.xlabel(xlabel)
+            plt.ylabel(ylabel)
+            x_min = 0
+            x_max = self.data.data_size*10
+            x_ticks = np.arange(x_min, x_max + 50, self.data.data_size)
+            plt.xticks(x_ticks)
+            plt.grid(True)
+            plt.legend()
 
-        # Crear un archivo temporal
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-            # Guardar la imagen temporalmente
-            plt.savefig(temp_file.name, format='png')
-            plt.close()
+            # Crear un archivo temporal
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+                # Guardar la imagen temporalmente
+                plt.savefig(temp_file.name, format='png')
+                plt.close()
 
-            # Especificar el nombre del archivo temporal a FPDF
-            self.set_font('Arial', 'B', 16)
-            self.set_text_color(50, 55, 59)
-            self.ln(10)
-            self.cell(0, 0, f'{title}', 0, 1, 'C', True)
-            self.set_font('Arial', '', 12)
-            self.ln(10)
+                # Especificar el nombre del archivo temporal a FPDF
 
-            # Usar el archivo temporal para agregar la imagen
-            self.image(temp_file.name, x=10, w=180, h=90)
-            self.ln()
+                # Usar el archivo temporal para agregar la imagen
+                self.image(temp_file.name, x=10, w=180, h=90)
+        self.ln()
     
     def _create_table_section(self, data_dict:dict, motion_planes:str):
         self.add_page()
@@ -277,14 +280,13 @@ class PDF(FPDF):
         return timestamp_string
 
     def build(self):
-        plt.rcParams.update(custom_style_2)
         self._first_page()
         self.add_page()
-        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['Time(ms)'], self.data.stride_raw_data['CDSagital'], self.data.stride_raw_data['CISagital'], 'Caderas en el plano Sagital data Original', 'Tiempo (ms)', 'CD vs CI', 'CD', 'CI')
-        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['Time(ms)'], self.data.stride_raw_data['CDFrontal'], self.data.stride_raw_data['CIFrontal'], 'Caderas en el plano Frontal data Original', 'Tiempo (ms)', 'CD vs CI', 'CD', 'CI' )
+        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['RDTime(ms)'], self.data.stride_raw_data['RDSagital'], self.data.stride_raw_data['RISagital'], 'Rodilla en el plano Sagital data Original', 'Tiempo (ms)', 'RD vs RI', 'RD', 'RI' )
+        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['RDTime(ms)'], self.data.stride_raw_data['RDFrontal'], self.data.stride_raw_data['RIFrontal'], 'Rodilla en el plano Frontal data Original', 'Tiempo (ms)', 'RD vs RI', 'RD', 'RI' )
         self.add_page()
-        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['Time(ms)'], self.data.stride_raw_data['RDSagital'], self.data.stride_raw_data['RISagital'], 'Rodilla en el plano Sagital data Original', 'Tiempo (ms)', 'RD vs RI', 'RD', 'RI' )
-        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['Time(ms)'], self.data.stride_raw_data['RDFrontal'], self.data.stride_raw_data['RIFrontal'], 'Rodilla en el plano Frontal data Original', 'Tiempo (ms)', 'RD vs RI', 'RD', 'RI' )
+        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['CDTime(ms)'], self.data.stride_raw_data['CDSagital'], self.data.stride_raw_data['CISagital'], 'Caderas en el plano Sagital data Original', 'Tiempo (ms)', 'CD vs CI', 'CD', 'CI')
+        self._create_comparative_plot_analytic_section(self.data.stride_raw_data['CDTime(ms)'], self.data.stride_raw_data['CDFrontal'], self.data.stride_raw_data['CIFrontal'], 'Caderas en el plano Frontal data Original', 'Tiempo (ms)', 'CD vs CI', 'CD', 'CI' )
         '''self.add_page()
         self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['TCDSagital'], self.data_dict['TCISagital'], 'Caderas en el plano Sagital data Transformada', 'Tiempo (ms)', 'CD vs CI')
         self._create_comparative_plot_analytic_section(self.data_dict['Time(ms)'], self.data_dict['TCDFrontal'], self.data_dict['TCIFrontal'], 'Caderas en el plano Frontal data Transformada', 'Tiempo (ms)', 'CD vs CI')

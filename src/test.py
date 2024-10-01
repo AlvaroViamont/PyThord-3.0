@@ -4,91 +4,54 @@ import re
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
+import scipy.signal as signal
 
-class Example:
-    def __init__(self, data:dict):
-        self.dict_data = data
-        self.old_data = None
-        self.new_data = None
-    
-    def _hip_transform_sagital (self, hip_angle):
-        if hip_angle < 0:
-            return 180 - abs(hip_angle)
-        else:
-            return 180 + abs(hip_angle)
-    
-    def _knee_transform_sagital (self, hip_angle, knee_angle):
-        if hip_angle < 0:
-            return 180 + abs(hip_angle) - abs(knee_angle)
-        else:
-            return 180 - abs(hip_angle) + abs(knee_angle)
-    
-    def _hip_transform_frontal (self):
-        pass
-    
-    def _knee_transform_frontal (self):
-        pass
+file1 = "30092024230928.json"
+file2 = "30092024230250.json"
+file3 = "30092024231355.json"
 
-    def _split_on_uppercase(self, s):
-        return re.findall(r'[A-Z][a-z]*', s)
-    
-    def transform_data (self):
-        self.old_data = self.dict_data.copy()
-        self.new_data = self.dict_data.copy()
-        for key in self.old_data.keys():
-            words = self._split_on_uppercase(key)
-            if words[-1] == 'Sagital':
-                if words[0] == 'C':
-                    self.new_data[key] = list(map(lambda hip: self._hip_transform_sagital(hip), self.old_data[key]))
-                elif words[0] == 'R':
-                    hip_key = 'C'+''.join(words[1:])
-                    self.new_data[key] = list(map(lambda hip, knee: self._knee_transform_sagital(hip, knee), self.old_data[hip_key], self.old_data[key]))
-            elif words[-1] == 'Frontal':
-                if words[0] == 'C':
-                    # hip_transform_frontal
-                    self.new_data[key] = self.old_data[key]
-                elif words[0] == 'R':
-                    # knee_transform_frontal
-                    self.new_data[key] = self.old_data[key]
-            else:
-                self.new_data[key] = self.old_data[key]
-
-j_file = get_file("4382916", "08092024195428.json")
+j_file = get_file("4382916", file3)
 
 with open(j_file, 'r') as file:
     data = json.load(file)
 
-my_data = Example(data)
-my_data.transform_data()
-for nlist in my_data.new_data.keys():
-    if 'Index' in nlist:
-        klist = my_data.new_data[nlist]
-        c = 1
-        for i in klist:
-            if i != c:
-                print(nlist, c)
-                c = c + 1
-            c = c + 1
-fig, ax = plt.subplots()
+max_value = np.mean(data['RDSagital'])
+peaks, _ = signal.find_peaks(data['RDSagital'], height=max_value, distance=80)
 
-'''def plot_data(x_data, y_data, label):
-        ax.plot(x_data, y_data, label=label)
-        plt.ylim(min(y_data)-20, max(y_data)+20)
-        plt.xlim(0, 5250)
-        plt.xlabel('Tiempo (ms)')
-        plt.ylabel('Angulo (grados)')
-        y_min, y_max = plt.ylim()
-        x_min, x_max = plt.xlim()
-        y_ticks = np.arange(y_min, y_max + 20, 20)
-        x_ticks = np.arange(x_min, x_max +20, 100)
-        plt.yticks(y_ticks)
-        plt.xticks(x_ticks)
-        
-my_data.new_data['RITime(ms)'].append(my_data.new_data['RITime(ms)'][-1]+15)
-my_data.new_data['RISagital'].append(my_data.new_data['RISagital'][-1])
+peaks2, _ = signal.find_peaks(data['RISagital'], height=max_value, distance=80)
 
-plot_data(my_data.new_data['RDTime(ms)'], my_data.new_data['RDSagital'], "Rodilla Derecha Sagital")
-plot_data(my_data.new_data['RITime(ms)'][:-1], my_data.new_data['RISagital'], "Rodilla Izquierda Sagital")
-ax.grid(True)
-ax.legend()
-plt.show()'''
+peaks3, _ = signal.find_peaks(-np.array(data['RDSagital']), height=max_value, distance=80)
+
+peaks4, _ = signal.find_peaks(-np.array(data['RISagital']), height=max_value, distance=80)
+
+peak_values = np.array(data['RDSagital'])[peaks]
+peak_values2 = np.array(data['RISagital'])[peaks2]
+peak_values3 = np.array(data['RDSagital'])[peaks3]
+peak_values4 = np.array(data['RISagital'])[peaks4]
+
+print("Índices de los picos RD:", peaks)
+print("Valores de los picos RD:", peak_values)
+print("Cantidad de picos RD: ", len(peaks))
+print("Índices de los picos RI:", peaks2)
+print("Valores de los picos RI:", peak_values2)
+print("Cantidad de picos RI: ", len(peaks2))
+
+tiempo = data['RDTime(ms)'][peaks[-1]]
+print('Tiempo Ultimo pico RD: ', tiempo)
+
+tiempo2 = data['RITime(ms)'][peaks2[-1]]
+print('Tiempo Ultimo pico RI: ', tiempo2)
+
+cadencia = ((len(peaks2) + len(peaks))*60)/3
+print(f'Cadencia: {cadencia} pasos/minuto')
+
+plt.plot(data['RDTime(ms)'], data['RDSagital'], label='RD')
+plt.plot(data['RDTime(ms)'], data['RISagital'], label='RI')
+plt.plot(peaks*10, peak_values, "x", label='PicosRI+')
+plt.plot(peaks2*10, peak_values2, "x", label='PicosRD+')
+plt.plot(peaks3*10, peak_values3, "o", label='PicosRD-')
+plt.plot(peaks4*10, peak_values4, "o", label='PicosRI-')
+plt.xlabel("Índice")
+plt.ylabel("Valor")
+plt.legend()
+plt.show()

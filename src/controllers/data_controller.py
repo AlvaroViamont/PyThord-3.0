@@ -1,6 +1,5 @@
 import re
-
-
+# from scipy.signal import find_peaks
 class DataController:
     def __init__(self) -> None:
         self.stride_raw_data:dict[str, list[int]] = {
@@ -19,9 +18,13 @@ class DataController:
             'MaxRD':0, 'MinRD':0,
             'MaxCD':0, 'MinCD':0,
             'MaxRI':0, 'MinRI':0,
-            'MaxCI':0, 'MinCI':0
+            'MaxCI':0, 'MinCI':0,
+            'TMaxRD':0, 'TMinRD':0,
+            'TMaxCD':0, 'TMinCD':0,
+            'TMaxRI':0, 'TMinRI':0,
+            'TMaxCI':0, 'TMinCI':0
         }
-        self.bases:tuple[str] = ('Index', 'Time(ms)', 'Sagital', 'Frontal')
+        self.bases:tuple[str] = ('RDSagital', 'RISagital')
         self.data_size:int = 300
     
     def clear (self):
@@ -45,7 +48,7 @@ class DataController:
             'TMaxRD':0, 'TMinRD':0,
             'TMaxCD':0, 'TMinCD':0,
             'TMaxRI':0, 'TMinRI':0,
-            'TMaxCI':0, 'TMinCI':0,
+            'TMaxCI':0, 'TMinCI':0
         }
         
     def control_data_rows(self):
@@ -152,3 +155,5 @@ class DataController:
         self.stride_angle['TMinRI'] = min(self.stride_transform_data['RISagital'])
         self.stride_angle['TMaxCI'] = max(self.stride_transform_data['CISagital'])
         self.stride_angle['TMinCI'] = min(self.stride_transform_data['CISagital'])
+    
+    

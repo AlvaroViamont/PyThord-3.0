@@ -10,7 +10,6 @@ class PatientController:
         self.right_leg_size:float|None = None
         self.left_leg_size:float|None = None
         self.folder_path:str|None = None
-        self.ejemplo = None
     
     def update_patient(self, **kwargs):
         for key, value in kwargs.items():

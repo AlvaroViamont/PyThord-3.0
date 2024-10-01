@@ -18,11 +18,10 @@ import threading
 import time
 
 class AppController:
-    def __init__(self, user_model, patient_model, stride_model, report_pdf, user_view=None, patient_view=None, stride_view=None):
+    def __init__(self, user_model, patient_model, stride_model, user_view=None, patient_view=None, stride_view=None):
         self.user_db:User = user_model
         self.patient_db:Patient = patient_model
         self.stride_db:Stride = stride_model
-        self.report_pdf:PDF = report_pdf
         self.user_view:User_View|None = user_view
         self.patient_view:Patient_View|None = patient_view
         self.stride_view:Analytic_View|None = stride_view
@@ -257,8 +256,7 @@ class AppController:
             return (False, 'Error', 'The Patient Does Not Exist')
     
     def open_patient_folder (self):
-        ci = self.patient_view.patient_search_focus_ci_label['text']
-        open_patient_folder (ci)
+        open_patient_folder (str(self.patient.ci))
     
     def launch_analytics_view (self):
         self.stride_view.stride_view_top_frame_user_name_label.configure(text=self.login_user)
@@ -274,6 +272,7 @@ class AppController:
         if self.connection_status:
             self.serial.get_connection()            
             self.connection_status = False
+            time.sleep(2)
             self.stride_view.stride_view_serial_conection_label.configure(text=f"{self.serial.port}")
             self.stride_view.stride_view_serial_conection_buttom.configure(text='Desconectar')
             self.stride_view.stride_view_start_collection_buttom.configure(state='normal')
@@ -319,12 +318,15 @@ class AppController:
             pass
     
     def _data_collection_task (self):
+        self.serial.connection.reset_input_buffer()
+        self.serial.connection.reset_output_buffer()
         self.serial.connection.write(f'{self.data.data_size}'.encode('utf-8'))
         self.stride_view.stride_view_serial_data_taked_label.config(text='Recibiendo Datos')
         try:
             while True:
                     # Leer la línea completa de datos
                 line = self.serial.connection.readline().decode('utf-8')
+                print(line)
                 # Separar la línea en sus componentes
                 try:
                     decoder, cont, x, y = line.strip().split(',')
@@ -357,15 +359,16 @@ class AppController:
                             self.data.stride_raw_data['CDSagital'].append(x)
                             self.data.stride_raw_data['CDFrontal'].append(y)
                 except Exception as e:
+                    print (e)
                     continue
                 try:
                     if all(self.data.stride_raw_data[key][-1] == self.data.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
-                        self.data.stride_transform_data = self.data.stride_raw_data.copy()
                         self.data.control_data_rows()
                         self.data.transform_data()
                         self.data.get_min_and_max()
                         break
                 except Exception as e:
+                    print(e)
                     continue
             graph_type =self.stride_view.motion_planes_var.get()
             joint = self.stride_view.joints_var.get()
@@ -376,6 +379,7 @@ class AppController:
             self.stride_view.stride_view_to_doc_buttom.configure(state='normal')
             return True
         except Exception as e:
+            print(e)
             pass
     
     def collect_data(self):
@@ -406,10 +410,11 @@ class AppController:
         return date_string, timestamp_string
     
     def make_report_pdf(self):
-        self.report_pdf.patient = self.patient
-        self.report_pdf.data = self.data
-        self.report_pdf.report_date, _ = self._get_current_date_and_timestamp()
-        pdf_path = self.report_pdf.build()
+        report_pdf:PDF = PDF()
+        report_pdf.patient = self.patient
+        report_pdf.data = self.data
+        report_pdf.report_date, _ = self._get_current_date_and_timestamp()
+        pdf_path = report_pdf.build()
         open_pdf_document(pdf_path)
     
     def save_raw_stride (self):

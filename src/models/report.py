@@ -92,7 +92,7 @@ class PDF(FPDF):
         self.cell(0, 0, 'PyThord', 0, 1)
         self.set_text_color(240, 240, 240)
         self.set_font('Arial', 'B', 14)
-        self.cell(0, 0, f'Fecha: {self.report_date}', 0, 1, 'R')
+        self.cell(0, 0, f'{self.report_date}', 0, 1, 'R')
         self.ln(15)
 
     def footer(self):
@@ -106,76 +106,90 @@ class PDF(FPDF):
             self.cell(0, 10, f'Contact: {self.doctor_contact}', 0, 0, 'R')
     
     def _first_page(self):
-        # Configura el tamaño de página Carta
-        self.add_page()
         
-        # Título principal
+        self.add_page()
         self.set_font('Arial', 'B', 24)
-        self.set_fill_color(255, 255, 255)  # Fondo blanco
-        self.set_text_color(50, 55, 59)  # Color oscuro para el texto # Espacio al principio
+        self.set_fill_color(255, 255, 255)
+        self.set_text_color(50, 55, 59)
+        
+        self.set_y(30)
         self.cell(190, 15, 'Análisis de Zancada', 0, 1, 'C', fill=True)
-        self.ln(1)  # Espacio después del título
-        # Información del paciente
+        
+        self.set_y(48.9)
+        self.line(0, 48.9, 210, 48.9)
+
         self.set_font('Arial', 'B', 12)
-        self.set_text_color(50, 55, 59)  # Color oscuro para el texto
-        self.cell(0, 5, f'Nombre del Paciente: {self.patient.name}', 0, 1, 'L')
-        self.cell(0, 5, f'Edad del Paciente: {self.patient.age}', 0, 1, 'L')
+        self.set_text_color(50, 55, 59)
+        
+        self.set_xy(13.5, 52.6)
         self.cell(0, 5, f'CI: {self.patient.ci}', 0, 1, 'L')
-        self.ln(5)  # Espacio después de la información del paciente
+        self.set_x(13.5)
+        self.cell(0, 5, f'Nombre: {self.patient.name}', 0, 1, 'L')
+        
+        self.set_xy(107.6, 52.6)
+        self.cell(0, 5, f'Edad: {self.patient.age}', 0, 1, 'L')
+        self.set_x(107.6)
+        self.cell(0, 5, f'Genero: {self.patient.gender}', 0, 1, 'L')
+        
+        self.set_xy(140.7, 52.6)
+        self.cell(0, 5, f'Pierna derecha: {self.patient.right_leg_size}', 0, 1, 'L')
+        self.set_x(140.7)
+        self.cell(0, 5, f'Pierna izquierda: {self.patient.left_leg_size}', 0, 1, 'L')
+        
+        self.set_y(65.3)
+        self.line(0, 65.3, 210, 65.3)
+        
+        self.set_xy(13.5, 68.9)
+        self.cell(0, 5, f'Cadencia: {self.patient.cadence}', 0, 1, 'L')
+        self.set_x(13.5)
+        self.cell(0, 5, f'Tiempo Promedio: {self.patient.average_time}', 0, 1, 'L')
+        
+        self.set_xy(107.6, 68.9)
+        self.cell(0, 5, f'Velocidad: {self.patient.speed}', 0, 1, 'L')
+        self.set_x(107.6)
+        self.cell(0, 5, f'Distancia Aproximada: {self.patient.distance}', 0, 1, 'L')
+        
+        self.set_y(83.5)
+        self.line(0, 83.5, 210, 83.5)
 
-        # Añadir primera fila de imágenes y datos de cadencia
-        y1 = self.get_y()
-        self.set_xy(45, y1)
-        self.cell(60, 10, f'Cadencia: {self.cadencia}', 0, 1, 'L')
-        self.cell(60, 10, f'Tiempo Promedio: {self.promed_time}', 0, 0, 'L')
-        self.set_xy(140, y1)
-        self.ln(45)  # Añade espacio después de las imágenes y datos
-
-        # Añadir segunda fila de imágenes y datos del sensor
-        y1 = self.get_y()
-        self.image(IMG_R_ARAW, 10, y1, 30, 45.5)  # Ajusta el ancho de la imagen
-        self.set_xy(45, y1)
+        self.image(IMG_R_ARAW, 13.5, 96.4, 50, 76.2)
+        self.image(IMG_R_BRAW, 105, 96.4, 50, 76.2)
+        self.set_xy(52.3, 118.5)
         self.cell(0, 10, f'A Sensor CIS(min): {self.data.stride_angle['MinCI']}', 0, 1, 'L')
-        self.set_x(45)
+        self.set_x(52.3)
         self.cell(0, 10, f'A Sensor CIS(max): {self.data.stride_angle['MaxCI']}', 0, 1, 'L')
-        self.set_x(45)
+        self.set_x(52.3)
         self.cell(0, 10, f'A Sensor RIS(min): {self.data.stride_angle['MinRI']}', 0, 1, 'L')
-        self.set_x(45)
+        self.set_x(52.3)
         self.cell(0, 10, f'A Sensor RIS(max): {self.data.stride_angle['MaxRI']}', 0, 1, 'L')
-        self.set_xy(110, y1)
+        self.set_xy(150, 118.5)
         self.cell(0, 10, f'A Sensor CDS(min): {self.data.stride_angle['MinCD']}', 0, 1, 'L')
-        self.set_x(110)
+        self.set_x(150)
         self.cell(0, 10, f'A Sensor CDS(max): {self.data.stride_angle['MaxCD']}', 0, 1, 'L')
-        self.set_x(110)
+        self.set_x(150)
         self.cell(0, 10, f'A Sensor RDS(min): {self.data.stride_angle['MinRD']}', 0, 1, 'L')
-        self.set_x(110)
+        self.set_x(150)
         self.cell(0, 10, f'A Sensor RDS(max): {self.data.stride_angle['MaxRD']}', 0, 1, 'L')
-        self.image(IMG_R_BRAW, 150, y1, 30, 45.5)  # Imagen ajustada en la misma fila
-        self.ln(45)  # Espacio después de esta fila
 
-        # Añadir tercera fila de imágenes y datos de la articulación
-        y1 = self.get_y()
-        self.image(IMG_R_ATRN, 10, y1, 30, 45.5)  # Imagen ajustada
-        self.set_xy(45, y1)
+        self.image(IMG_R_ATRN, 13.5, 192.2, 50, 76.2)
+        self.image(IMG_R_BTRN, 105, 192.2, 50, 76.2)
+        self.set_xy(53.3, 214.7)
         self.cell(0, 10, f'A Art. CIS(min): {self.data.stride_angle['TMinCI']}', 0, 1, 'L')
-        self.set_x(45)
+        self.set_x(53.3)
         self.cell(0, 10, f'A Art. CIS(max): {self.data.stride_angle['TMaxCI']}', 0, 1, 'L')
-        self.set_x(45)
+        self.set_x(53.3)
         self.cell(0, 10, f'A Art. RIS(min): {self.data.stride_angle['TMinRI']}', 0, 1, 'L')
-        self.set_x(45)
+        self.set_x(53.3)
         self.cell(0, 10, f'A Art. RIS(max): {self.data.stride_angle['TMaxRI']}', 0, 1, 'L')
-        self.set_xy(110, y1)
+        self.set_xy(150, 214.7)
         self.cell(0, 10, f'A Art. CDS(min): {self.data.stride_angle['TMinCD']}', 0, 1, 'L')
-        self.set_x(110)
+        self.set_x(150)
         self.cell(0, 10, f'A Art. CDS(max): {self.data.stride_angle['TMaxCD']}', 0, 1, 'L')
-        self.set_x(110)
+        self.set_x(150)
         self.cell(0, 10, f'A Art. RDS(min): {self.data.stride_angle['TMinRD']}', 0, 1, 'L')
-        self.set_x(110)
+        self.set_x(150)
         self.cell(0, 10, f'A Art. RDS(max): {self.data.stride_angle['TMaxRD']}', 0, 1, 'L')
-        self.image(IMG_R_BTRN, 150, y1, 30, 45.5)  # Imagen ajustada
-        self.ln(45)  # Espacio después de esta fila
-        # Fin de la página
-        self.ln(5)
+
     
     def _create_plot_analytic_section(self, x_column, y_column, title, xlabel, ylabel):
         plt.figure(figsize=(8, 4))
@@ -213,7 +227,7 @@ class PDF(FPDF):
         self.ln(10)
         self.cell(0, 0, f'{title}', 0, 1, 'C', True)
         self.set_font('Arial', '', 12)
-        self.ln(10)
+        self.ln(5)
         
         with plt.style.context(custom_style_2):
             plt.figure(figsize=(8, 4))

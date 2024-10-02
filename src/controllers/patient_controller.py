@@ -7,9 +7,13 @@ class PatientController:
         self.gender:str|None = None
         self.phone:str|None = None
         self.mail:str|None = None
-        self.right_leg_size:float|None = None
-        self.left_leg_size:float|None = None
-        self.folder_path:str|None = None
+        self.right_leg_size:float = 0
+        self.left_leg_size:float = 0
+        self.folder_path:str = 0
+        self.cadence:float = 0
+        self.average_time:float = 0
+        self.speed:float = 0
+        self.distance:float = 0
     
     def update_patient(self, **kwargs):
         for key, value in kwargs.items():
@@ -24,9 +28,13 @@ class PatientController:
         self.gender = None
         self.phone = None
         self.mail = None
-        self.right_leg_size = None
-        self.left_leg_size = None
-        self.folder_path = None
+        self.right_leg_size = 0
+        self.left_leg_size = 0
+        self.folder_path = 0
+        self.cadence = 0
+        self.average_time = 0
+        self.speed = 0
+        self.distance = 0
     
     def __str__(self) -> str:
         return f'Paciente: {self.name} CI: {self.ci}'

@@ -326,7 +326,6 @@ class AppController:
             while True:
                     # Leer la línea completa de datos
                 line = self.serial.connection.readline().decode('utf-8')
-                print(line)
                 # Separar la línea en sus componentes
                 try:
                     decoder, cont, x, y = line.strip().split(',')
@@ -366,6 +365,7 @@ class AppController:
                         self.data.control_data_rows()
                         self.data.transform_data()
                         self.data.get_min_and_max()
+                        self.data.get_peaks()
                         break
                 except Exception as e:
                     print(e)

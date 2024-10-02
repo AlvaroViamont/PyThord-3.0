@@ -1,4 +1,6 @@
 import re
+import numpy as np
+import scipy.signal as signal
 # from scipy.signal import find_peaks
 class DataController:
     def __init__(self) -> None:
@@ -26,6 +28,10 @@ class DataController:
         }
         self.bases:tuple[str] = ('RDSagital', 'RISagital')
         self.data_size:int = 300
+        self.ldata_ipeaks:np.array|None = None
+        self.rdata_ipeaks:np.array|None = None
+        self.ldata_peaks:np.array|None = None
+        self.rdata_peaks:np.array|None = None
     
     def clear (self):
         self.stride_raw_data = {
@@ -156,4 +162,10 @@ class DataController:
         self.stride_angle['TMaxCI'] = max(self.stride_transform_data['CISagital'])
         self.stride_angle['TMinCI'] = min(self.stride_transform_data['CISagital'])
     
-    
+    def get_peaks (self):
+        max_value_d = np.mean(self.stride_raw_data['RDSagital'])
+        max_value_i = np.mean(self.stride_raw_data['RISagital'])
+        self.rdata_ipeaks, _ = signal.find_peaks(self.stride_raw_data['RDSagital'], height=max_value_d, distance=80)
+        self.ldata_ipeaks, _ = signal.find_peaks(self.stride_raw_data['RISagital'], height=max_value_i, distance=80)
+        self.rdata_peaks = np.array(self.stride_raw_data['RDSagital'])[self.rdata_ipeaks]
+        self.ldata_peaks = np.array(self.stride_raw_data['RISagital'])[self.ldata_ipeaks]

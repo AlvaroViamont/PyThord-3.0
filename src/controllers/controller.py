@@ -270,12 +270,13 @@ class AppController:
     
     def get_conection (self):
         if self.connection_status:
-            self.serial.get_connection()            
-            self.connection_status = False
-            time.sleep(2)
-            self.stride_view.stride_view_serial_conection_label.configure(text=f"{self.serial.port}")
-            self.stride_view.stride_view_serial_conection_buttom.configure(text='Desconectar')
-            self.stride_view.stride_view_start_collection_buttom.configure(state='normal')
+            self.serial.get_connection()
+            if self.serial.connection:          
+                self.connection_status = False
+                time.sleep(2)
+                self.stride_view.stride_view_serial_conection_label.configure(text=f"{self.serial.port}")
+                self.stride_view.stride_view_serial_conection_buttom.configure(text='Desconectar')
+                self.stride_view.stride_view_start_collection_buttom.configure(state='normal')
         else:
             if self.thread is not None and self.thread.is_alive():
                 self.thread.join()
@@ -375,18 +376,18 @@ class AppController:
             laterality = self.stride_view.laterality_var.get()
             self.update_plot(graph_type, joint, laterality)
             self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
+            self.stride_view.stride_view_raw_data_max_min_valor_buttom.configure(state='normal')
             self.stride_view.stride_view_save_buttom.configure(state='normal')
-            self.stride_view.stride_view_to_doc_buttom.configure(state='normal')
             return True
         except Exception as e:
             print(e)
             pass
     
     def collect_data(self):
+        self.stride_view.stride_view_save_buttom.configure(state='disabled')
+        self.stride_view.stride_view_raw_data_max_min_valor_buttom.configure(state='disabled')
         if self.stride_view.stride_view_start_collection_buttom['text'] == 'Iniciar' and self.thread is None:
             self.data.clear()
-            self.stride_view.stride_view_save_buttom.configure(state='disabled')
-            self.stride_view.stride_view_to_doc_buttom.configure(state='disabled')
             self.stride_view.stride_view_start_collection_buttom.configure(text='Reset')
             self.thread = threading.Thread(target=self._data_collection_task, daemon=True)
             self.thread.start()

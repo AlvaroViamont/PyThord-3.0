@@ -78,6 +78,7 @@ class Analytic_View (General_View):
         self.stride_view_serial_conection_buttom = tk.Button(self.stride_view_patient_information_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Conectar", font=self.BLACK_REGULAR_FONT, padx=5)
         self.stride_view_start_collection_buttom = tk.Button(self.stride_view_patient_information_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Iniciar", font=self.BLACK_REGULAR_FONT, state='disabled')
         self.stride_view_serial_data_taked_label = tk.Label(self.stride_view_patient_information_frame, text='', foreground=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT, padx=5)
+        self.stride_view_save_buttom = tk.Button(self.stride_view_patient_information_frame, bg=self.CELADON_GREEN, activebackground=self.ONYX, fg=self.ONYX, activeforeground=self.CELADON_GREEN, text="Guardar", font=self.BLACK_REGULAR_FONT, padx=5, state='disabled')
         self.stride_view_exit_buttom = tk.Button(self.stride_view_patient_information_frame, bg=self.SMOKY_TOPAZ, activebackground=self.ONYX, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ANTI_FLASH_WHITE, text="Volver", font=self.BLACK_REGULAR_FONT, padx=5)
         self.stride_view_main_buttons_frame_separator = ttk.Separator(self.stride_view_main_buttons_frame, orient='horizontal', style='top.TSeparator')
         self.stride_view_top_main_buttons_frame_separator = ttk.Separator(self.stride_view_main_buttons_frame, orient='horizontal', style='top.TSeparator')
@@ -109,12 +110,6 @@ class Analytic_View (General_View):
         self.stride_view_left_laterality_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Izquierda', variable=self.laterality_var, value=2, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
         self.stride_view_right_laterality_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Derecha', variable=self.laterality_var, value=1, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
         self.stride_view_ignore_laterality_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='~graf', variable=self.laterality_var, value=0, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
-        
-        self.comparative_plot_var = tk.IntVar()
-        self.stride_view_comparative_plot_checkbuttom = tk.Checkbutton(self.stride_view_components_left_frame, bg=self.ONYX, fg=self.ANTI_FLASH_WHITE, font=self.REGULAR_FONT, text="Análisis Comparativo", variable=self.comparative_plot_var, offvalue=0, onvalue=1, activebackground=self.ONYX, activeforeground=self.ANTI_FLASH_WHITE, highlightcolor=self.ONYX, selectcolor=self.BITTERSWEET_SHIMMER)
-        
-        self.comparative_var = tk.StringVar()
-        self.stride_view_search_comparative_plot_combobox = ttk.Combobox(self.stride_view_components_left_frame, style='SComparative.TCombobox', values=['', 'Análisis Realizados'], font=self.REGULAR_FONT, state='disabled', textvariable=self.comparative_var)
 
                 # Right Frame Components
         self.stride_view_components_right_frame = tk.Frame(self.stride_view_components_frame, bg=self.CELADON_GREEN)
@@ -126,16 +121,22 @@ class Analytic_View (General_View):
                     # Right Bottom Frame Components
         self.stride_view_bottom_components_right_frame = tk.Frame(self.stride_view_components_right_frame, bg=self.OUTER_SPACE)
         self.stride_view_bottom_components_right_frame_separator = ttk.Separator(self.stride_view_bottom_components_right_frame, orient='horizontal', style='top.TSeparator')
-        self.stride_view_save_buttom = tk.Button(self.stride_view_bottom_components_right_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Guardar", font=self.BLACK_REGULAR_FONT, padx=5, state='disabled')
-        self.stride_view_to_doc_buttom = tk.Button(self.stride_view_bottom_components_right_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Reporte", font=self.BLACK_REGULAR_FONT, padx=5, state='disabled')
+        self.stride_view_bottom_labels_components_right_frame = tk.Frame(self.stride_view_bottom_components_right_frame, bg=self.OUTER_SPACE)
+        self.stride_view_raw_data_max_min_valor_buttom = tk.Button(self.stride_view_bottom_labels_components_right_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Valores", font=self.BLACK_REGULAR_FONT, padx=5, state='disabled', command=self._show_general_analytics)
+        
+        self.stride_view_pop_win:tk.Toplevel|None = None
+        self.stride_view_pop_win_top_frame:tk.Frame|None = None
+        self.stride_view_pop_win_topc_frame:tk.Frame|None = None
+        self.stride_view_pop_win_left_frame:tk.Frame|None = None
+        self.stride_view_pop_win_right_frame:tk.Frame|None = None
+        self.stride_view_pop_win_rightc_frame:tk.Frame|None = None
+        
         
             # Configurations:
-        self.stride_view_comparative_plot_checkbuttom.configure(command=self.comparative_version_plot_control)
         self.stride_view_exit_buttom.configure(command=self.back_to_patient_view)
         self.stride_view_serial_conection_buttom.configure(command=self.create_canvas)
         self.stride_view_start_collection_buttom.configure(command=self.controller.collect_data)
         self.stride_view_save_buttom.configure(command=self.save_stride_view)
-        self.stride_view_to_doc_buttom.configure(command=self.create_report_buttom)
         self.stride_view_time_combobox.bind("<<ComboboxSelected>>", self.time_selected)
     
     def build_main_stride_view (self):
@@ -160,6 +161,7 @@ class Analytic_View (General_View):
         self.stride_view_start_collection_buttom.pack(side=tk.LEFT, anchor='w', padx=5)
         self.stride_view_serial_data_taked_label.pack(side=tk.LEFT, anchor='w', padx=5)
         self.stride_view_exit_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=10)
+        self.stride_view_save_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=10)
         self.stride_view_main_buttons_frame_separator.pack(side=tk.BOTTOM, fill='x', expand=True)
         self.stride_view_components_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.stride_view_components_left_frame.pack(side=tk.LEFT, fill='y')
@@ -177,20 +179,12 @@ class Analytic_View (General_View):
         self.stride_view_left_laterality_radiobuttom.grid(column=0, row=6, columnspan=1, padx=5, pady=10, sticky='w')
         self.stride_view_right_laterality_radiobuttom.grid(column=1, row=6, columnspan=1, padx=5, pady=10, sticky='w')
         self.stride_view_ignore_laterality_radiobuttom.grid(column=2, row=6, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_comparative_plot_checkbuttom.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_search_comparative_plot_combobox.grid(column=0, row=8, columnspan=3, padx=5, pady=10, sticky='w')
         self.stride_view_left_components_right_frame_separator.pack(side=tk.LEFT, fill='y')
         self.stride_view_top_components_right_frame.pack(side=tk.TOP, fill='both', expand=True)
         self.stride_view_bottom_components_right_frame.pack(side=tk.BOTTOM, fill='x')
         self.stride_view_bottom_components_right_frame_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
-        self.stride_view_save_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=10)
-        self.stride_view_to_doc_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=10)
-    
-    def comparative_version_plot_control (self):
-        if self.comparative_plot_var.get():
-            self.stride_view_search_comparative_plot_combobox.configure(state='readonly')
-        else:
-            self.stride_view_search_comparative_plot_combobox.configure(state='disabled')
+        self.stride_view_bottom_labels_components_right_frame.pack(side=tk.BOTTOM, anchor='e', fill=tk.BOTH)
+        self.stride_view_raw_data_max_min_valor_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=5, ipadx=5, ipady=5)
     
     def back_to_patient_view (self):
         try:
@@ -227,6 +221,7 @@ class Analytic_View (General_View):
     def save_stride_view (self):
         if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos?'):
             self.controller.save_raw_stride()
+            self.create_report_buttom()
 
     def time_selected (self, event):
         num = self.stride_view_time_combobox.get().split(" ")
@@ -236,6 +231,144 @@ class Analytic_View (General_View):
     def create_report_buttom(self):
         if self.ask_yes_no('Generar reporte', '¿Quiere generar un reporte?'):
             self.controller.make_report_pdf()
+    
+    def _show_general_analytics (self):
+        self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.DISABLED)
+        self.stride_view_pop_win = tk.Toplevel()
+        def on_closing():
+            self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.NORMAL)
+            self.stride_view_pop_win.destroy()
+        self.stride_view_pop_win.protocol("WM_DELETE_WINDOW", on_closing)
+        self.stride_view_pop_win.geometry("1000x600")
+        self.stride_view_pop_win.title('Analisis numéricos')
+        self.stride_view_pop_win_top_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
+        self.stride_view_pop_win_top_frame.pack(side=tk.TOP, fill=tk.X)
+        self.stride_view_pop_win_topc_frame = tk.Frame(self.stride_view_pop_win_top_frame, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
+        self.stride_view_pop_win_topc_frame.pack(side=tk.TOP, fill=tk.X)
+        close_buttom = tk.Button(self.stride_view_pop_win_topc_frame, bg=self.SMOKY_TOPAZ, activebackground=self.ONYX, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ANTI_FLASH_WHITE, text="Cerrar", font=self.BLACK_REGULAR_FONT, padx=5, command=self.close)
+        close_buttom.pack(side=tk.RIGHT, pady=10, padx=10)
+        top_separator = ttk.Separator(self.stride_view_pop_win_top_frame, orient='horizontal', style='top.TSeparator')
+        top_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
+        self.stride_view_pop_win_left_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=60, height=self.stride_view_pop_win.winfo_screenheight()-60
+        self.stride_view_pop_win_left_frame.pack(side=tk.LEFT, fill=tk.Y)
+        raw_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Controlador", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_raw_data)
+        raw_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
+        trn_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Transformados", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_trn_data)
+        trn_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
+        self.stride_view_pop_win_right_frame = tk.Frame(self.stride_view_pop_win, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
+        self.stride_view_pop_win_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        self.stride_view_pop_win_rightc_frame = tk.Frame(self.stride_view_pop_win_right_frame, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
+        self.stride_view_pop_win_rightc_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        left_separator = ttk.Separator(self.stride_view_pop_win_right_frame, orient='vertical', style='top.TSeparator')
+        left_separator.pack(side=tk.LEFT, anchor='w', fill='y')
+        
+    def close(self):
+        self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.NORMAL)
+        self.stride_view_pop_win.destroy()
+
+    def generate_raw_data (self):
+        self.widget_grid_forget(self.stride_view_pop_win_rightc_frame)
+        self.widget_pack_forget(self.stride_view_pop_win_rightc_frame)
+        title_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Valores mínimos y máximos', foreground=self.ONYX, font=self.SUB_TITLE_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
+        title_label.grid(column=0, row=0, columnspan=4, pady=5, ipadx=5, ipady=5)
+        subtitle_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Datos Puros', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
+        subtitle_label.grid(column=0, row=1, columnspan=4, pady=5, ipadx=5, ipady=5)
+        
+        rd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        rd.grid(column=0, row=2, columnspan=2, pady=5, ipadx=5)
+        rd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_min_lb.grid(column=0, row=3, pady=5, ipadx=5)
+        rd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_min_d.grid(column=1, row=3, pady=5, ipadx=5)
+        rd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_max_lb.grid(column=2, row=3, pady=5, ipadx=5)
+        rd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_max_d.grid(column=3, row=3, pady=5, ipadx=5)
+        
+        cd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        cd.grid(column=0, row=4, columnspan=2, pady=5, ipadx=5)
+        cd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_min_lb.grid(column=0, row=5, pady=5, ipadx=5)
+        cd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_min_d.grid(column=1, row=5, pady=5, ipadx=5)
+        cd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_max_lb.grid(column=2, row=5, pady=5, ipadx=5)
+        cd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_max_d.grid(column=3, row=5, pady=5, ipadx=5)
+        
+        ri = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        ri.grid(column=0, row=6, columnspan=2, pady=5, ipadx=5)
+        ri_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_min_lb.grid(column=0, row=7, pady=5, ipadx=5)
+        ri_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_min_d.grid(column=1, row=7, pady=5, ipadx=5)
+        ri_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_max_lb.grid(column=2, row=7, pady=5, ipadx=5)
+        ri_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_max_d.grid(column=3, row=7, pady=5, ipadx=5)
+        
+        ci = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        ci.grid(column=0, row=8, columnspan=2, pady=5, ipadx=5)
+        ci_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_min_lb.grid(column=0, row=9, pady=5, ipadx=5)
+        ci_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_min_d.grid(column=1, row=9, pady=5, ipadx=5)
+        ci_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_max_lb.grid(column=2, row=9, pady=5, ipadx=5)
+        ci_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_max_d.grid(column=3, row=9, pady=5, ipadx=5)
+    
+    def generate_trn_data (self):
+        self.widget_grid_forget(self.stride_view_pop_win_rightc_frame)
+        self.widget_pack_forget(self.stride_view_pop_win_rightc_frame)
+        title_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Valores mínimos y máximos', foreground=self.ONYX, font=self.SUB_TITLE_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
+        title_label.grid(column=0, row=0, columnspan=4, pady=5, ipadx=5, ipady=5)
+        subtitle_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Datos Transformados', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
+        subtitle_label.grid(column=0, row=1, columnspan=4, pady=5, ipadx=5, ipady=5)
+        
+        rd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        rd.grid(column=0, row=2, columnspan=2, pady=5, ipadx=5)
+        rd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_min_lb.grid(column=0, row=3, pady=5, ipadx=5)
+        rd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_min_d.grid(column=1, row=3, pady=5, ipadx=5)
+        rd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_max_lb.grid(column=2, row=3, pady=5, ipadx=5)
+        rd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        rd_max_d.grid(column=3, row=3, pady=5, ipadx=5)
+        
+        cd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        cd.grid(column=0, row=4, columnspan=2, pady=5, ipadx=5)
+        cd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_min_lb.grid(column=0, row=5, pady=5, ipadx=5)
+        cd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_min_d.grid(column=1, row=5, pady=5, ipadx=5)
+        cd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_max_lb.grid(column=2, row=5, pady=5, ipadx=5)
+        cd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        cd_max_d.grid(column=3, row=5, pady=5, ipadx=5)
+        
+        ri = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        ri.grid(column=0, row=6, columnspan=2, pady=5, ipadx=5)
+        ri_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_min_lb.grid(column=0, row=7, pady=5, ipadx=5)
+        ri_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_min_d.grid(column=1, row=7, pady=5, ipadx=5)
+        ri_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_max_lb.grid(column=2, row=7, pady=5, ipadx=5)
+        ri_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ri_max_d.grid(column=3, row=7, pady=5, ipadx=5)
+        
+        ci = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
+        ci.grid(column=0, row=8, columnspan=2, pady=5, ipadx=5)
+        ci_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_min_lb.grid(column=0, row=9, pady=5, ipadx=5)
+        ci_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_min_d.grid(column=1, row=9, pady=5, ipadx=5)
+        ci_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_max_lb.grid(column=2, row=9, pady=5, ipadx=5)
+        ci_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
+        ci_max_d.grid(column=3, row=9, pady=5, ipadx=5)
 
 class PlotFrame():
     def __init__(self, parent):

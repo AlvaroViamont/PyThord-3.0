@@ -153,8 +153,8 @@ class PDF(FPDF):
         self.set_x(95)
         self.cell(0, 5, f'Longitud Zancada Izquierda: {self.patient.mean_distancel} m', 0, 1, 'L')
         
-        self.set_y(100)
-        self.line(0, 83.5, 210, 83.5)
+        self.set_y(85)
+        self.line(0, 85, 210, 85)
 
         self.image(IMG_R_ARAW, 13.5, 96.4, 50, 76.2)
         self.image(IMG_R_BRAW, 105, 96.4, 50, 76.2)

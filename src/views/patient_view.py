@@ -445,7 +445,7 @@ class Patient_View (General_View):
                 self.button_state_fun(tk.NORMAL)
                 self.patient_search_upper_level_search_pdf_window.destroy()
             self.patient_search_upper_level_search_pdf_window.protocol("WM_DELETE_WINDOW", on_closing)
-            self.patient_search_upper_level_search_pdf_window.geometry("420x150")
+            self.patient_search_upper_level_search_pdf_window.geometry("420x150+500+300")
             self.patient_search_upper_level_search_pdf_window.title('Abrir PDF')
             self.patient_search_upper_level_search_pdf_window.configure(background=self.OUTER_SPACE)
             

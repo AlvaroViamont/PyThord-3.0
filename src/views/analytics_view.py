@@ -128,6 +128,7 @@ class Analytic_View (General_View):
         self.stride_view_pop_win_top_frame:tk.Frame|None = None
         self.stride_view_pop_win_topc_frame:tk.Frame|None = None
         self.stride_view_pop_win_left_frame:tk.Frame|None = None
+        self.stride_view_pop_win_left_canvas:PlotFrame|None = None
         self.stride_view_pop_win_right_frame:tk.Frame|None = None
         self.stride_view_pop_win_rightc_frame:tk.Frame|None = None
         
@@ -201,7 +202,7 @@ class Analytic_View (General_View):
                 self.stride_view_top_components_right_canvas.destroy_plot()
             except:
                 pass
-            self.stride_view_top_components_right_canvas = PlotFrame(self.stride_view_top_components_right_frame)
+            self.new_canvas()
         else:
             try:
                 self.stride_view_serial_data_taked_label.config(text='')
@@ -221,16 +222,13 @@ class Analytic_View (General_View):
     def save_stride_view (self):
         if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos?'):
             self.controller.save_raw_stride()
-            self.create_report_buttom()
+            self.controller.make_report_pdf()
 
     def time_selected (self, event):
         num = self.stride_view_time_combobox.get().split(" ")
         time = int(num[0])*100
         self.controller.data.data_size = time
-    
-    def create_report_buttom(self):
-        if self.ask_yes_no('Generar reporte', '¿Quiere generar un reporte?'):
-            self.controller.make_report_pdf()
+        self.controller.data.data_time = int(num[0])
     
     def _show_general_analytics (self):
         self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.DISABLED)
@@ -251,10 +249,10 @@ class Analytic_View (General_View):
         top_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
         self.stride_view_pop_win_left_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=60, height=self.stride_view_pop_win.winfo_screenheight()-60
         self.stride_view_pop_win_left_frame.pack(side=tk.LEFT, fill=tk.Y)
-        raw_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Controlador", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_raw_data)
+        raw_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Min/Max", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_raw_data)
         raw_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
-        trn_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Transformados", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_trn_data)
-        trn_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
+        raw_data_calc_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Metricas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.build_metrics_data)
+        raw_data_calc_buttom.pack(side=tk.TOP, pady=10, padx=10)
         self.stride_view_pop_win_right_frame = tk.Frame(self.stride_view_pop_win, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
         self.stride_view_pop_win_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         self.stride_view_pop_win_rightc_frame = tk.Frame(self.stride_view_pop_win_right_frame, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
@@ -267,108 +265,133 @@ class Analytic_View (General_View):
         self.stride_view_pop_win.destroy()
 
     def generate_raw_data (self):
+        try:
+            self.stride_view_pop_win_left_canvas.destroy_plot()
+        except:
+            pass
         self.widget_grid_forget(self.stride_view_pop_win_rightc_frame)
         self.widget_pack_forget(self.stride_view_pop_win_rightc_frame)
         title_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Valores mínimos y máximos', foreground=self.ONYX, font=self.SUB_TITLE_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
-        title_label.grid(column=0, row=0, columnspan=4, pady=5, ipadx=5, ipady=5)
-        subtitle_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Datos Puros', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
-        subtitle_label.grid(column=0, row=1, columnspan=4, pady=5, ipadx=5, ipady=5)
+        title_label.grid(column=0, row=0, columnspan=8, pady=5, ipady=5)
+        subtitle_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Sensor', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        subtitle_label.grid(column=0, row=1, pady=5, ipady=5, columnspan=8)
         
-        rd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        rd.grid(column=0, row=2, columnspan=2, pady=5, ipadx=5)
-        rd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_min_lb.grid(column=0, row=3, pady=5, ipadx=5)
-        rd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_min_d.grid(column=1, row=3, pady=5, ipadx=5)
-        rd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_max_lb.grid(column=2, row=3, pady=5, ipadx=5)
-        rd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_max_d.grid(column=3, row=3, pady=5, ipadx=5)
+        rd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Pierna Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        rd.grid(column=0, row=2, columnspan=8, pady=2)
+        rd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (max):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        rd_min_lb.grid(column=0, row=3, pady=2)
+        rd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        rd_min_d.grid(column=1, row=3, pady=2)
+        rd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        rd_max_lb.grid(column=2, row=3, pady=2)
+        rd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        rd_max_d.grid(column=3, row=3, pady=2)
         
-        cd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        cd.grid(column=0, row=4, columnspan=2, pady=5, ipadx=5)
-        cd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_min_lb.grid(column=0, row=5, pady=5, ipadx=5)
-        cd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_min_d.grid(column=1, row=5, pady=5, ipadx=5)
-        cd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_max_lb.grid(column=2, row=5, pady=5, ipadx=5)
-        cd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_max_d.grid(column=3, row=5, pady=5, ipadx=5)
+        cd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (max)', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        cd_min_lb.grid(column=4, row=3, pady=2)
+        cd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        cd_min_d.grid(column=5, row=3, pady=2)
+        cd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        cd_max_lb.grid(column=6, row=3, pady=2)
+        cd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        cd_max_d.grid(column=7, row=3, pady=2)
         
-        ri = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        ri.grid(column=0, row=6, columnspan=2, pady=5, ipadx=5)
-        ri_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_min_lb.grid(column=0, row=7, pady=5, ipadx=5)
-        ri_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_min_d.grid(column=1, row=7, pady=5, ipadx=5)
-        ri_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_max_lb.grid(column=2, row=7, pady=5, ipadx=5)
-        ri_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_max_d.grid(column=3, row=7, pady=5, ipadx=5)
+        ri = tk.Label(self.stride_view_pop_win_rightc_frame, text='Pierna Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER)
+        ri.grid(column=0, row=4, columnspan=8, pady=2)
+        ri_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (max):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ri_min_lb.grid(column=0, row=5, pady=2)
+        ri_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ri_min_d.grid(column=1, row=5, pady=2)
+        ri_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ri_max_lb.grid(column=2, row=5, pady=2)
+        ri_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ri_max_d.grid(column=3, row=5, pady=2)
         
-        ci = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        ci.grid(column=0, row=8, columnspan=2, pady=5, ipadx=5)
-        ci_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_min_lb.grid(column=0, row=9, pady=5, ipadx=5)
-        ci_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_min_d.grid(column=1, row=9, pady=5, ipadx=5)
-        ci_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_max_lb.grid(column=2, row=9, pady=5, ipadx=5)
-        ci_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_max_d.grid(column=3, row=9, pady=5, ipadx=5)
+        ci_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (max):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ci_min_lb.grid(column=4, row=5, pady=2)
+        ci_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MaxCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ci_min_d.grid(column=5, row=5, pady=2)
+        ci_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ci_max_lb.grid(column=6, row=5, pady=2)
+        ci_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['MinCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ci_max_d.grid(column=7, row=5, pady=2)
+        
+        subtitle_label2 = tk.Label(self.stride_view_pop_win_rightc_frame, text='Calculos', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        subtitle_label2.grid(column=0, row=6, pady=5, ipady=5, columnspan=8)
+        
+        trd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Pierna Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        trd.grid(column=0, row=7, columnspan=8, pady=2)
+        trd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (max):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        trd_min_lb.grid(column=0, row=8, pady=2)
+        trd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        trd_min_d.grid(column=1, row=8, pady=2)
+        trd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        trd_max_lb.grid(column=2, row=8, pady=2)
+        trd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        trd_max_d.grid(column=3, row=8, pady=2)
+        
+        tcd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (max)', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        tcd_min_lb.grid(column=4, row=8, pady=2)
+        tcd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        tcd_min_d.grid(column=5, row=8, pady=2)
+        tcd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        tcd_max_lb.grid(column=6, row=8, pady=2)
+        tcd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        tcd_max_d.grid(column=7, row=8, pady=2)
+        
+        ri = tk.Label(self.stride_view_pop_win_rightc_frame, text='Pierna Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER)
+        ri.grid(column=0, row=9, columnspan=8, pady=2)
+        ri_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (max):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ri_min_lb.grid(column=0, row=10, pady=2)
+        ri_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ri_min_d.grid(column=1, row=10, pady=2)
+        ri_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ri_max_lb.grid(column=2, row=10, pady=2)
+        ri_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ri_max_d.grid(column=3, row=10, pady=2)
+        
+        ci_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (max):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ci_min_lb.grid(column=4, row=10, pady=2)
+        ci_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ci_min_d.grid(column=5, row=10, pady=2)
+        ci_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera (min):', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ci_max_lb.grid(column=6, row=10, pady=2)
+        ci_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ci_max_d.grid(column=7, row=10, pady=2)
     
-    def generate_trn_data (self):
+    def build_metrics_data (self):
+        try:
+            self.stride_view_pop_win_left_canvas.destroy_plot()
+        except:
+            pass
         self.widget_grid_forget(self.stride_view_pop_win_rightc_frame)
         self.widget_pack_forget(self.stride_view_pop_win_rightc_frame)
-        title_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Valores mínimos y máximos', foreground=self.ONYX, font=self.SUB_TITLE_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
-        title_label.grid(column=0, row=0, columnspan=4, pady=5, ipadx=5, ipady=5)
-        subtitle_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Datos Transformados', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
-        subtitle_label.grid(column=0, row=1, columnspan=4, pady=5, ipadx=5, ipady=5)
+        title_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Metricas Obtenidas', foreground=self.ONYX, font=self.SUB_TITLE_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
+        title_label.grid(column=0, row=0, columnspan=8, pady=5, ipady=5)
         
-        rd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        rd.grid(column=0, row=2, columnspan=2, pady=5, ipadx=5)
-        rd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_min_lb.grid(column=0, row=3, pady=5, ipadx=5)
-        rd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_min_d.grid(column=1, row=3, pady=5, ipadx=5)
-        rd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_max_lb.grid(column=2, row=3, pady=5, ipadx=5)
-        rd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinRD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        rd_max_d.grid(column=3, row=3, pady=5, ipadx=5)
+        cadence_text = f'Cadencia: {self.controller.patient.cadence} pasos/minuto'
+        cadence = tk.Label(self.stride_view_pop_win_rightc_frame, text=cadence_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        cadence.grid(column=0, row=2, pady=2)
         
-        cd = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Derecha:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        cd.grid(column=0, row=4, columnspan=2, pady=5, ipadx=5)
-        cd_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_min_lb.grid(column=0, row=5, pady=5, ipadx=5)
-        cd_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_min_d.grid(column=1, row=5, pady=5, ipadx=5)
-        cd_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_max_lb.grid(column=2, row=5, pady=5, ipadx=5)
-        cd_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinCD'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        cd_max_d.grid(column=3, row=5, pady=5, ipadx=5)
+        rtime_text = f'Tiempo Promedio Zancasa Derecha: {self.controller.patient.right_time} segundos'
+        rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        rtime.grid(column=0, row=3, pady=2)
         
-        ri = tk.Label(self.stride_view_pop_win_rightc_frame, text='Rodilla Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        ri.grid(column=0, row=6, columnspan=2, pady=5, ipadx=5)
-        ri_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_min_lb.grid(column=0, row=7, pady=5, ipadx=5)
-        ri_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_min_d.grid(column=1, row=7, pady=5, ipadx=5)
-        ri_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_max_lb.grid(column=2, row=7, pady=5, ipadx=5)
-        ri_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinRI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ri_max_d.grid(column=3, row=7, pady=5, ipadx=5)
+        ltime_text = f'Tiempo Promedio Zancasa Izquierda: {self.controller.patient.left_time} segundos'
+        ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ltime.grid(column=0, row=4, pady=2)
         
-        ci = tk.Label(self.stride_view_pop_win_rightc_frame, text='Cadera Izquierda:', foreground=self.ONYX, font=self.BLACK_REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT, padx=5)
-        ci.grid(column=0, row=8, columnspan=2, pady=5, ipadx=5)
-        ci_min_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Máximo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_min_lb.grid(column=0, row=9, pady=5, ipadx=5)
-        ci_min_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMaxCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_min_d.grid(column=1, row=9, pady=5, ipadx=5)
-        ci_max_lb = tk.Label(self.stride_view_pop_win_rightc_frame, text='Mínimo:', foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_max_lb.grid(column=2, row=9, pady=5, ipadx=5)
-        ci_max_d = tk.Label(self.stride_view_pop_win_rightc_frame, text=self.controller.data.stride_angle['TMinCI'], foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT, padx=5)
-        ci_max_d.grid(column=3, row=9, pady=5, ipadx=5)
+        velocity_text = f'Velocidad Media: {self.controller.patient.speed} metros/segundos'
+        velocity = tk.Label(self.stride_view_pop_win_rightc_frame, text=velocity_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        velocity.grid(column=1, row=2, pady=2)
+        
+        rtime_text = f'Promedio Zancasa Derecha: {self.controller.patient.mean_distancer} metros'
+        rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        rtime.grid(column=1, row=3, pady=2)
+        
+        ltime_text = f'Promedio Zancasa Izquierda: {self.controller.patient.mean_distancel} metros'
+        ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
+        ltime.grid(column=1, row=4, pady=2)
 
 class PlotFrame():
     def __init__(self, parent):

@@ -40,6 +40,13 @@ class General_View:
         self.root.bind('<F11>', lambda event: self.root.state('zoomed'))
         
         self.style_config = ttk.Style()
+        self.style_config.theme_use('clam') 
+        self.style_config.configure("TCombobox", 
+                        fieldbackground=self.ANTI_FLASH_WHITE, 
+                        background=self.OUTER_SPACE,            
+                        foreground=self.ONYX,                  
+                        selectbackground=self.ANTI_FLASH_WHITE,      
+                        selectforeground=self.ONYX) 
         
         self.REGULAR_FONT = fnt.Font(family='Lato', size=16)
         self.BLACK_REGULAR_FONT = fnt.Font(family='Lato Black', size=16)

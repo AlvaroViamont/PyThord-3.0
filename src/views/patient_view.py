@@ -112,7 +112,13 @@ class Patient_View (General_View):
         self.patient_search_folder_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Carpeta")
         self.patient_search_report_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.ONYX, foreground=self.ANTI_FLASH_WHITE, activebackground=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Reportes")
         self.patient_search_take_buttom = tk.Button(self.patient_search_button_gruop_frame, font=self.REGULAR_FONT, bg=self.EART_YELLOW, foreground=self.ONYX, activebackground=self.ONYX, activeforeground=self.EART_YELLOW, text="Análisis")
-        self.patient_ci_var = tk.StringVar()
+        
+        self.patient_search_upper_level_search_pdf_window:tk.Toplevel|None = None
+        self.patient_search_upper_level_label:tk.Label|None = None
+        self.patient_search_upper_level_combobox:ttk.Combobox|None = None
+        self.patient_search_upper_level_button:tk.Button|None = None
+        self.patient_search_upper_level_cancel_button:tk.Button|None = None
+        
             # Page Components Configure
         self.patient_view_create_buttom.configure(command=self.build_create_patient_view)
         self.patient_view_search_buttom.configure(command=self.build_search_patient_view)
@@ -126,7 +132,8 @@ class Patient_View (General_View):
         self.patient_search_delete_buttom.configure(command=self.build_delete_patient_view)
         self.patient_search_update_buttom.configure(command=self.build_update_patient_view)
         self.patient_search_folder_buttom.configure(command=self.controller.open_patient_folder)
-        self.patient_search_take_buttom.configure(command=self.controller.launch_analytics_view)
+        self.patient_search_take_buttom.configure(command=self.controller.launch_analytics_view) 
+        self.patient_search_report_buttom.configure(command=self.build_search_pdf_view)
     
     def build_main_patient_view (self):
         self.widget_pack_forget(self.root)
@@ -428,3 +435,41 @@ class Patient_View (General_View):
             self.patient_search_focus_phone_entry.grid_forget()
             self.patient_search_focus_mail_entry.grid_forget()
             self.build_search_patient_result_view()
+    
+    def build_search_pdf_view  (self):     
+        dates_list = self.controller.get_stride_date_patient()
+        if dates_list:
+            self.button_state_fun(tk.DISABLED)
+            self.patient_search_upper_level_search_pdf_window = tk.Toplevel()
+            def on_closing():
+                self.button_state_fun(tk.NORMAL)
+                self.patient_search_upper_level_search_pdf_window.destroy()
+            self.patient_search_upper_level_search_pdf_window.protocol("WM_DELETE_WINDOW", on_closing)
+            self.patient_search_upper_level_search_pdf_window.geometry("420x150")
+            self.patient_search_upper_level_search_pdf_window.title('Abrir PDF')
+            self.patient_search_upper_level_search_pdf_window.configure(background=self.OUTER_SPACE)
+            
+            self.patient_search_upper_level_label = tk.Label(self.patient_search_upper_level_search_pdf_window, text='Seleccionar PDF:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.OUTER_SPACE, justify='left')
+            self.patient_search_upper_level_label.grid(column=0, row=0, padx=10, pady=10, sticky='E')
+            self.patient_search_upper_level_combobox = ttk.Combobox(self.patient_search_upper_level_search_pdf_window, values=dates_list, style="TCombobox", width=30)
+            self.patient_search_upper_level_combobox.grid(column=1, row=0, padx=10, pady=10, sticky='E')
+            self.patient_search_upper_level_button = tk.Button(self.patient_search_upper_level_search_pdf_window, font=self.REGULAR_FONT, bg=self.EART_YELLOW, foreground=self.ONYX, activebackground=self.ONYX, activeforeground=self.EART_YELLOW, text="Abrir", width=10, command=self.open_pdf_buttom)
+            self.patient_search_upper_level_button.grid(column=1, row=1, padx=10, pady=10, sticky='E')
+            self.patient_search_upper_level_cancel_button = tk.Button(self.patient_search_upper_level_search_pdf_window, font=self.REGULAR_FONT, bg=self.EART_YELLOW, foreground=self.ONYX, activebackground=self.ONYX, activeforeground=self.EART_YELLOW, text="Cancelar", width=10, command=on_closing)
+            self.patient_search_upper_level_cancel_button.grid(column=0, row=1, padx=10, pady=10, sticky='E')
+        else:
+            self.show_info('Error', 'No existen reportes anteriores')
+    
+    def button_state_fun (self, state):
+        self.patient_search_delete_buttom.configure(state=state)
+        self.patient_search_update_buttom.configure(state=state)
+        self.patient_search_folder_buttom.configure(state=state)
+        self.patient_search_report_buttom.configure(state=state)
+        self.patient_search_take_buttom.configure(state=state)
+    
+    def open_pdf_buttom (self):
+        pdf_path = self.patient_search_upper_level_combobox.get()
+        self.controller.open_pdf_patient_document(pdf_path)
+        self.button_state_fun(tk.NORMAL)
+        self.patient_search_upper_level_search_pdf_window.destroy()
+        

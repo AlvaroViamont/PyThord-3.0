@@ -476,3 +476,12 @@ class AppController:
         report_pdf.report_name = name
         pdf_path = report_pdf.build()
         open_pdf_document(pdf_path)
+
+    def plot_peaks (self):
+        self.stride_view.stride_view_pop_win_left_canvas.plot_data(self.data.stride_raw_data['RDTime(ms)'], self.data.stride_raw_data['RDFrontal'], "Rodilla Derecha Frontal")
+        self.stride_view.stride_view_pop_win_left_canvas.plot_data(self.data.stride_raw_data['RITime(ms)'], self.data.stride_raw_data['RIFrontal'], "Rodilla Izquierda Frontal")
+        self.stride_view.stride_view_pop_win_left_canvas.plot_data_mark(self.data.rdata_ipeaks*10, self.data.rdata_peaks, "Picos Rodilla Derecha")
+        self.stride_view.stride_view_pop_win_left_canvas.plot_data_mark(self.data.ldata_ipeaks*10, self.data.ldata_peaks, "Picos Rodilla Izquierda")
+        self.stride_view.stride_view_top_components_right_canvas.ax.grid(True)
+        self.stride_view.stride_view_top_components_right_canvas.ax.legend()
+        self.stride_view.stride_view_top_components_right_canvas.canvas.draw()

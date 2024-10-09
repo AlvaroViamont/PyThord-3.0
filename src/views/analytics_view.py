@@ -237,7 +237,7 @@ class Analytic_View (General_View):
             self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.NORMAL)
             self.stride_view_pop_win.destroy()
         self.stride_view_pop_win.protocol("WM_DELETE_WINDOW", on_closing)
-        self.stride_view_pop_win.geometry("1000x600")
+        self.stride_view_pop_win.geometry("1000x600+100+200")
         self.stride_view_pop_win.title('Analisis numéricos')
         self.stride_view_pop_win_top_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
         self.stride_view_pop_win_top_frame.pack(side=tk.TOP, fill=tk.X)
@@ -253,6 +253,8 @@ class Analytic_View (General_View):
         raw_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
         raw_data_calc_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Metricas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.build_metrics_data)
         raw_data_calc_buttom.pack(side=tk.TOP, pady=10, padx=10)
+        raw_data_avnz_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Graficas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_grafic)
+        raw_data_avnz_buttom.pack(side=tk.TOP, pady=10, padx=10)
         self.stride_view_pop_win_right_frame = tk.Frame(self.stride_view_pop_win, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
         self.stride_view_pop_win_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         self.stride_view_pop_win_rightc_frame = tk.Frame(self.stride_view_pop_win_right_frame, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
@@ -392,6 +394,16 @@ class Analytic_View (General_View):
         ltime_text = f'Promedio Zancasa Izquierda: {self.controller.patient.mean_distancel} metros'
         ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
         ltime.grid(column=1, row=4, pady=2)
+    
+    def generate_grafic (self):
+        try:
+            self.stride_view_pop_win_left_canvas.destroy_plot()
+        except:
+            pass
+        self.widget_grid_forget(self.stride_view_pop_win_rightc_frame)
+        self.widget_pack_forget(self.stride_view_pop_win_rightc_frame)
+        self.stride_view_pop_win_left_canvas = PlotFrame(self.stride_view_pop_win_rightc_frame)
+        self.controller.plot_peaks()
 
 class PlotFrame():
     def __init__(self, parent):
@@ -403,6 +415,15 @@ class PlotFrame():
 
     def plot_data(self, x_data, y_data, label):
         self.ax.plot(x_data, y_data, label=label)
+        plt.ylim(self.min, self.max)
+        plt.xlabel('Tiempo (ms)')
+        plt.ylabel('Angulo (grados)')
+        y_min, y_max = plt.ylim()
+        y_ticks = np.arange(y_min, y_max + 20, 20)
+        plt.yticks(y_ticks)
+    
+    def plot_data_mark (self, x_data, y_data, label):
+        self.ax.plot(x_data, y_data, label=label, marker='o', color='#32373B')
         plt.ylim(self.min, self.max)
         plt.xlabel('Tiempo (ms)')
         plt.ylabel('Angulo (grados)')

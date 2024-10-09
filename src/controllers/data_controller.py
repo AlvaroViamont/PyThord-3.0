@@ -1,5 +1,6 @@
 import re
 import numpy as np
+import math
 import scipy.signal as signal
 # from scipy.signal import find_peaks
 class DataController:
@@ -28,10 +29,15 @@ class DataController:
         }
         self.bases:tuple[str] = ('RDSagital', 'RISagital')
         self.data_size:int = 300
+        self.data_time:int = 3
         self.ldata_ipeaks:np.array|None = None
         self.rdata_ipeaks:np.array|None = None
         self.ldata_peaks:np.array|None = None
         self.rdata_peaks:np.array|None = None
+        self.mean_distancer:float|int|None = None
+        self.mean_distancel:float|int|None = None
+        self.timel:float|None = None
+        self.timer:float|None = None
     
     def clear (self):
         self.stride_raw_data = {
@@ -167,5 +173,59 @@ class DataController:
         max_value_i = np.mean(self.stride_raw_data['RISagital'])
         self.rdata_ipeaks, _ = signal.find_peaks(self.stride_raw_data['RDSagital'], height=max_value_d, distance=80)
         self.ldata_ipeaks, _ = signal.find_peaks(self.stride_raw_data['RISagital'], height=max_value_i, distance=80)
+        self.nrdata_ipeaks, _ = signal.find_peaks(-np.array(self.stride_raw_data['RDSagital']), height=max_value_d, distance=80)
+        self.nldata_ipeaks, _ = signal.find_peaks(-np.array(self.stride_raw_data['RISagital']), height=max_value_i, distance=80)
         self.rdata_peaks = np.array(self.stride_raw_data['RDSagital'])[self.rdata_ipeaks]
         self.ldata_peaks = np.array(self.stride_raw_data['RISagital'])[self.ldata_ipeaks]
+        self.nrdata_peaks = np.array(self.stride_raw_data['RDSagital'])[self.nrdata_ipeaks]
+        self.nldata_peaks = np.array(self.stride_raw_data['RISagital'])[self.nldata_ipeaks]
+    
+    def get_cadence (self):
+        return ((len(self.rdata_ipeaks) + len(self.ldata_ipeaks))*60)/self.data_time
+    
+    def get_average_time(self): 
+        rtimer = [self.stride_raw_data['RDTime(ms)'][self.rdata_ipeaks[i+1]] - self.stride_raw_data['RDTime(ms)'][self.rdata_ipeaks[i]] for i in range(len(self.rdata_ipeaks)-1)]
+        self.timer = round((sum(rtimer)/len(rtimer))/1000, 2)
+        ltimel = [self.stride_raw_data['RITime(ms)'][self.ldata_ipeaks[i+1]] - self.stride_raw_data['RITime(ms)'][self.ldata_ipeaks[i]] for i in range(len(self.ldata_ipeaks)-1)]
+        self.timel = round((sum(ltimel)/len(ltimel))/1000, 2)
+
+    def set_distance (self, size):
+        ldistance = []
+        rdistance = []
+        if self.rdata_ipeaks[0] > self.nrdata_ipeaks[0]:
+            for i in range(min(len(self.rdata_ipeaks), len(self.nrdata_ipeaks))):
+                A = self._get_real_angle(A=self.nrdata_peaks[i])
+                B = self._get_real_angle(A=self.rdata_peaks[i])
+                C = self._get_real_angle(A=A, B=B)
+                rdistance.append(self._get_segment_distance(A=A, C=C, a=size))
+        else:
+            for i in range(1, min(len(self.rdata_ipeaks), len(self.nrdata_ipeaks))):
+                A = self._get_real_angle(A=self.nrdata_peaks[i])
+                B = self._get_real_angle(A=self.rdata_peaks[i])
+                C = self._get_real_angle(A=A, B=B)
+                rdistance.append(self._get_segment_distance(A=A, C=C, a=size))
+        if self.ldata_ipeaks[0] > self.nldata_ipeaks[0]:
+            for i in range(min(len(self.ldata_ipeaks), len(self.nldata_ipeaks))):
+                A = self._get_real_angle(A=self.nldata_peaks[i])
+                B = self._get_real_angle(A=self.ldata_peaks[i])
+                C = self._get_real_angle(A=A, B=B)
+                ldistance.append(self._get_segment_distance(A=A, C=C, a=size))
+        else:
+            for i in range(1, min(len(self.ldata_ipeaks), len(self.nldata_ipeaks))):
+                A = self._get_real_angle(A=self.nldata_peaks[i])
+                B = self._get_real_angle(A=self.ldata_peaks[i])
+                C = self._get_real_angle(A=A, B=B)
+                ldistance.append(self._get_segment_distance(A=A, C=C, a=size))
+        self.mean_distancel = round(sum(ldistance)/len(ldistance), 2)
+        self.mean_distancer = round(sum(rdistance)/len(rdistance), 2)
+    
+    def _get_real_angle (self, A=0, B=90):
+        return 180 - abs(A) - abs(B)
+    
+    def _get_segment_distance (self, A, C, a):
+        return (a * math.sin(math.radians(C))) / math.sin(math.radians(A))
+    
+    def get_velocity (self):
+        lvelocity = round(self.mean_distancel/self.timel)
+        rvelocity = round(self.mean_distancer/self.timer)
+        return round((lvelocity + rvelocity) / 2, 2)

@@ -59,3 +59,8 @@ def get_patient_doc_file (ci, document):
 
 def open_pdf_document (path):
     os.startfile(path)
+
+def get_json_to_dict (ci, path):
+    with open(get_file(ci, path), 'r') as file:
+            data = json.load(file)
+    return data

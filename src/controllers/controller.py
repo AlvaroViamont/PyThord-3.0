@@ -9,7 +9,7 @@ from controllers.patient_controller import PatientController
 from controllers.serial_controller import SerialController
 from controllers.data_controller import DataController
 
-from paths import create_patient_structure, get_patient_folder, delete_patient_structure, open_patient_folder, save_dict_to_json, open_pdf_document
+from paths import create_patient_structure, get_patient_folder, delete_patient_structure, open_patient_folder, save_dict_to_json, open_pdf_document, get_json_to_dict
 
 import models.encrypt as nc
 import tkinter as tk
@@ -214,7 +214,7 @@ class AppController:
             right_leg_size = patient_exist[7]
             left_leg_size = patient_exist[8]
             folder = get_patient_folder(str(ci))
-            self.patient.update_patient(ci=int(ci), name=full_name, birthday=date, age=age, phone=phone, mail=mail, right_leg_size=right_leg_size, left_leg_size=left_leg_size, folder_path=folder)
+            self.patient.update_patient(ci=int(ci), name=full_name, birthday=date, gender=gender, age=age, phone=phone, mail=mail, right_leg_size=right_leg_size, left_leg_size=left_leg_size, folder_path=folder)
             return self.patient
         else:
             return False
@@ -339,7 +339,7 @@ class AppController:
                             self.data.stride_raw_data['RIIndex'].append(cont)
                             self.data.stride_raw_data['RITime(ms)'].append(ltime)
                             self.data.stride_raw_data['RISagital'].append(x*-1)
-                            self.data.stride_raw_data['RIFrontal'].append(y*-1)
+                            self.data.stride_raw_data['RIFrontal'].append(y)
                     elif decoder == "N":
                         if cont <= self.data.data_size and cont not in self.data.stride_raw_data['RDIndex']:
                             self.data.stride_raw_data['RDIndex'].append(cont)
@@ -351,7 +351,7 @@ class AppController:
                             self.data.stride_raw_data['CIIndex'].append(cont)
                             self.data.stride_raw_data['CITime(ms)'].append(ltime)
                             self.data.stride_raw_data['CISagital'].append(x*-1)
-                            self.data.stride_raw_data['CIFrontal'].append(y*-1)
+                            self.data.stride_raw_data['CIFrontal'].append(y)
                     elif decoder == "P":
                         if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CDIndex']:
                             self.data.stride_raw_data['CDIndex'].append(cont)
@@ -367,6 +367,15 @@ class AppController:
                         self.data.transform_data()
                         self.data.get_min_and_max()
                         self.data.get_peaks()
+                        self.data.set_distance(self.patient.right_leg_size)
+                        self.data.get_average_time()
+                        self.patient.speed = self.data.get_velocity()
+                        self.patient.cadence = self.data.get_cadence()
+                        self.patient.left_time = self.data.timel
+                        self.patient.right_time = self.data.timer
+                        self.patient.average_time = round((self.data.timel + self.data.timer) / 2, 2)
+                        self.patient.mean_distancer = self.data.mean_distancer
+                        self.patient.mean_distancel = self.data.mean_distancel
                         break
                 except Exception as e:
                     print(e)
@@ -414,7 +423,7 @@ class AppController:
         report_pdf:PDF = PDF()
         report_pdf.patient = self.patient
         report_pdf.data = self.data
-        report_pdf.report_date, _ = self._get_current_date_and_timestamp()
+        report_pdf.report_date, report_pdf.report_name = self._get_current_date_and_timestamp()
         pdf_path = report_pdf.build()
         open_pdf_document(pdf_path)
     
@@ -424,3 +433,46 @@ class AppController:
         stride_description = ''
         save_dict_to_json(self.data.stride_raw_data, str(self.patient.ci), stride_id)
         self.stride_db.create_stride(stride_id, stride_date, stride_document, stride_description, self.patient.ci)
+    
+    def get_stride_date_patient (self):
+        stride = self.stride_db.get_strides_by_patient(self.patient.ci)
+        if stride:
+            return [strd[0]+'.pdf' for strd in stride]
+        else:
+            return None
+
+    def open_pdf_patient_document (self, pdf_path):
+        try:
+            open_pdf_document(pdf_path)
+        except:
+            name = pdf_path[:-4]
+            pdf_json = pdf_path[:-4]+'.json'
+            date = '/'.join((pdf_path[:2], pdf_path[2:4], pdf_path[4:8]))
+            self._restore_pdf(pdf_json, date, name)
+    
+    def _restore_pdf (self, path, date, name):        
+        auxiliar_data = DataController()
+        auxiliar_data.stride_raw_data = get_json_to_dict(str(self.patient.ci), path)
+        auxiliar_data.data_size = len(auxiliar_data.stride_raw_data['RDSagital'])
+        auxiliar_data.data_time = auxiliar_data.data_size // 100
+        auxiliar_data.transform_data()
+        auxiliar_data.get_min_and_max()
+        auxiliar_data.get_peaks()
+        auxiliar_data.get_average_time()
+        auxiliar_patient = PatientController()
+        auxiliar_patient.update_patient(**self.patient.__dict__)
+        auxiliar_data.set_distance(auxiliar_patient.right_leg_size)
+        auxiliar_patient.speed = auxiliar_data.get_velocity()
+        auxiliar_patient.cadence = auxiliar_data.get_cadence()
+        auxiliar_patient.left_time = auxiliar_data.timel
+        auxiliar_patient.right_time = auxiliar_data.timer
+        auxiliar_patient.average_time = round((auxiliar_data.timel + auxiliar_data.timer)/2, 2)
+        auxiliar_patient.mean_distancer = auxiliar_data.mean_distancer
+        auxiliar_patient.mean_distancel = auxiliar_data.mean_distancel
+        report_pdf:PDF = PDF()
+        report_pdf.patient = auxiliar_patient
+        report_pdf.data = auxiliar_data
+        report_pdf.report_date = date
+        report_pdf.report_name = name
+        pdf_path = report_pdf.build()
+        open_pdf_document(pdf_path)

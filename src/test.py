@@ -1,4 +1,4 @@
-import json
+'''import json
 from paths import get_file
 import re
 import matplotlib.pyplot as plt
@@ -55,3 +55,29 @@ plt.xlabel("Índice")
 plt.ylabel("Valor")
 plt.legend()
 plt.show()
+'''
+
+from controllers.patient_controller import PatientController
+
+p = PatientController()
+datos = {
+    'ci': 5195292, 
+    'name': 'Alvaro Viamont Rico', 
+    'birthday': '03/12/1991', 
+    'age': '31', 
+    'gender': 'M', 
+    'phone': None, 
+    'mail': None, 
+    'right_leg_size': 0.83, 
+    'left_leg_size': 0.83, 
+    'folder_path': None, 
+    'cadence': 0, 
+    'average_time': 0, 
+    'speed': 0, 
+    'distance': 0}
+p.update_patient(**datos)
+print(p.__dict__)
+p2 = PatientController()
+print(p2.__dict__)
+p2.update_patient(**p.__dict__)
+print(p2.__dict__)

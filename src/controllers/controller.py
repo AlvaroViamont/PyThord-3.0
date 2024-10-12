@@ -33,7 +33,7 @@ class AppController:
         self.serial:SerialController = SerialController()
         self.data:DataController = DataController()
         
-        self.connection_status = True
+        self.connection_status:bool = True
         self.thread:threading.Thread|None = None
     
     def logup_redirection (self):
@@ -149,13 +149,13 @@ class AppController:
     def create_new_patient (self):
         ci = self.patient_view.patient_view_patient_ci_entry.get()
         if ci == '':
-            return (False, 'Error', 'Empty CI Entry')
+            return (False, 'Error', 'CI Vacio')
         patient_exist = self.patient_db.get_patient_by_id(ci)
         if patient_exist:
-            return (False, 'Error', 'Existent CI')
+            return (False, 'Error', 'CI ya existe')
         day = self.patient_view.patient_view_patient_birthdate_day_entry.get()
         if day == '':
-            return (False, 'Error', 'Empty Day Entry')
+            return (False, 'Error', 'FECH vacio')
         month = self.patient_view.patient_view_patient_birthdate_month_entry.get()
         if month == '':
             return (False, 'Error', 'Empty Month Entry')
@@ -266,6 +266,9 @@ class AppController:
     
     def back_to_patient_view (self):
         self.patient.clear_patient()
+        self.patient_view.widget_pack_forget(self.patient_view.patient_view_bottom_frame)
+        self.patient_view.widget_grid_forget(self.patient_view.patient_view_bottom_frame)
+        self.patient_view.widget_grid_forget(self.patient_view.patient_search_view_conteiner_frame)
         self.patient_view.build_main_patient_view()
     
     def get_conection (self):
@@ -340,24 +343,32 @@ class AppController:
                             self.data.stride_raw_data['RITime(ms)'].append(ltime)
                             self.data.stride_raw_data['RISagital'].append(x*-1)
                             self.data.stride_raw_data['RIFrontal'].append(y)
+                            self.stride_view.stride_view_bottom_labels_components_modulem_label.config(text=f'Modulo: M | Posición: {cont} | Sagital: {x*-1} | Frontal: {y}')
+                            self.stride_view.stride_view_bottom_labels_components_modulem_label.update()
                     elif decoder == "N":
                         if cont <= self.data.data_size and cont not in self.data.stride_raw_data['RDIndex']:
                             self.data.stride_raw_data['RDIndex'].append(cont)
                             self.data.stride_raw_data['RDTime(ms)'].append(ltime)
                             self.data.stride_raw_data['RDSagital'].append(x)
                             self.data.stride_raw_data['RDFrontal'].append(y)
+                            self.stride_view.stride_view_bottom_labels_components_modulen_label.config(text=f'Modulo: N | Posición: {cont} | Sagital: {x} | Frontal: {y}')
+                            self.stride_view.stride_view_bottom_labels_components_modulen_label.update()
                     elif decoder == "O":
                         if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CIIndex']:
                             self.data.stride_raw_data['CIIndex'].append(cont)
                             self.data.stride_raw_data['CITime(ms)'].append(ltime)
                             self.data.stride_raw_data['CISagital'].append(x*-1)
                             self.data.stride_raw_data['CIFrontal'].append(y)
+                            self.stride_view.stride_view_bottom_labels_components_moduleo_label.config(text=f'Modulo: O | Posición: {cont} | Sagital: {x*-1} | Frontal: {y}')
+                            self.stride_view.stride_view_bottom_labels_components_moduleo_label.update()
                     elif decoder == "P":
                         if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CDIndex']:
                             self.data.stride_raw_data['CDIndex'].append(cont)
                             self.data.stride_raw_data['CDTime(ms)'].append(ltime)
                             self.data.stride_raw_data['CDSagital'].append(x)
                             self.data.stride_raw_data['CDFrontal'].append(y)
+                            self.stride_view.stride_view_bottom_labels_components_modulep_label.config(text=f'Modulo: P | Posición: {cont} | Sagital: {x} | Frontal: {y}')
+                            self.stride_view.stride_view_bottom_labels_components_modulep_label.update()
                 except Exception as e:
                     print (e)
                     continue
@@ -366,27 +377,17 @@ class AppController:
                         self.data.control_data_rows()
                         self.data.transform_data()
                         self.data.get_min_and_max()
-                        self.data.get_peaks()
-                        self.data.set_distance(self.patient.right_leg_size)
-                        self.data.get_average_time()
-                        self.patient.speed = self.data.get_velocity()
-                        self.patient.cadence = self.data.get_cadence()
-                        self.patient.left_time = self.data.timel
-                        self.patient.right_time = self.data.timer
-                        self.patient.average_time = round((self.data.timel + self.data.timer) / 2, 2)
-                        self.patient.mean_distancer = self.data.mean_distancer
-                        self.patient.mean_distancel = self.data.mean_distancel
                         break
                 except Exception as e:
                     print(e)
                     continue
+                
             graph_type =self.stride_view.motion_planes_var.get()
             joint = self.stride_view.joints_var.get()
             laterality = self.stride_view.laterality_var.get()
             self.update_plot(graph_type, joint, laterality)
             self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
             self.stride_view.stride_view_raw_data_max_min_valor_buttom.configure(state='normal')
-            self.stride_view.stride_view_save_buttom.configure(state='normal')
             return True
         except Exception as e:
             print(e)
@@ -412,6 +413,10 @@ class AppController:
             self.stride_view.new_canvas()
             self.stride_view.stride_view_serial_data_taked_label.config(text='')
             self.stride_view.stride_view_start_collection_buttom.configure(text='Iniciar')
+            self.stride_view.stride_view_bottom_labels_components_modulem_label.config(text=f'Modulo: M | Posición: - | Sagital: - | Frontal: -')
+            self.stride_view.stride_view_bottom_labels_components_modulen_label.config(text=f'Modulo: N | Posición: - | Sagital: - | Frontal: -')
+            self.stride_view.stride_view_bottom_labels_components_moduleo_label.config(text=f'Modulo: O | Posición: - | Sagital: - | Frontal: -')
+            self.stride_view.stride_view_bottom_labels_components_modulep_label.config(text=f'Modulo: P | Posición: - | Sagital: - | Frontal: -')
     
     def _get_current_date_and_timestamp(self):
         now = datetime.now()
@@ -478,10 +483,22 @@ class AppController:
         open_pdf_document(pdf_path)
 
     def plot_peaks (self):
-        self.stride_view.stride_view_pop_win_left_canvas.plot_data(self.data.stride_raw_data['RDTime(ms)'], self.data.stride_raw_data['RDFrontal'], "Rodilla Derecha Frontal")
-        self.stride_view.stride_view_pop_win_left_canvas.plot_data(self.data.stride_raw_data['RITime(ms)'], self.data.stride_raw_data['RIFrontal'], "Rodilla Izquierda Frontal")
         self.stride_view.stride_view_pop_win_left_canvas.plot_data_mark(self.data.rdata_ipeaks*10, self.data.rdata_peaks, "Picos Rodilla Derecha")
         self.stride_view.stride_view_pop_win_left_canvas.plot_data_mark(self.data.ldata_ipeaks*10, self.data.ldata_peaks, "Picos Rodilla Izquierda")
-        self.stride_view.stride_view_top_components_right_canvas.ax.grid(True)
-        self.stride_view.stride_view_top_components_right_canvas.ax.legend()
-        self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
+        self.stride_view.stride_view_pop_win_left_canvas.plot_data(self.data.stride_raw_data['RDTime(ms)'], self.data.stride_raw_data['RDSagital'], "Rodilla Derecha Sagital")
+        self.stride_view.stride_view_pop_win_left_canvas.plot_data(self.data.stride_raw_data['RITime(ms)'], self.data.stride_raw_data['RISagital'], "Rodilla Izquierda Sagital")
+        self.stride_view.stride_view_pop_win_left_canvas.ax.grid(True)
+        self.stride_view.stride_view_pop_win_left_canvas.ax.legend()
+        self.stride_view.stride_view_pop_win_left_canvas.canvas.draw()
+        
+    def make_load_data_metrics (self):
+        self.data.get_peaks()
+        self.data.set_distance(self.patient.right_leg_size)
+        self.data.get_average_time()
+        self.patient.speed = self.data.get_velocity()
+        self.patient.cadence = self.data.get_cadence()
+        self.patient.left_time = self.data.timel
+        self.patient.right_time = self.data.timer
+        self.patient.average_time = round((self.data.timel + self.data.timer) / 2, 2)
+        self.patient.mean_distancer = self.data.mean_distancer
+        self.patient.mean_distancel = self.data.mean_distancel

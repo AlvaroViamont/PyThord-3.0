@@ -1,50 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from .general_view import General_View
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from controllers.canvas_draw import PlotFrame
 import matplotlib.pyplot as plt
 import numpy as np
-
-
-# Aplicar el estilo personalizado
-plt.style.use('seaborn-v0_8-dark')  # Usar un estilo base que armonice con los colores
-
-colors = {
-    "EART_YELLOW": "#FAB860",
-    "ONYX": "#32373B",
-    "OUTER_SPACE": "#4A5859",
-    "ANTI_FLASH_WHITE": "#F0F0F0",
-    "BITTERSWEET_SHIMMER": "#C83E4D",
-    "CELADON_GREEN": "#2E8B57",   
-    "DEEP_CARMINE_PINK": "#EF3038",
-    "SMOKY_TOPAZ": "#935A5C"
-}
-
-custom_style = {
-    "axes.facecolor": colors["OUTER_SPACE"],
-    "axes.edgecolor": colors["ONYX"],
-    "axes.labelcolor": colors["ANTI_FLASH_WHITE"],
-    "xtick.color": colors["EART_YELLOW"],
-    "ytick.color": colors["EART_YELLOW"],
-    "text.color": colors["ANTI_FLASH_WHITE"],
-    "figure.facecolor": colors["ONYX"],
-    "figure.edgecolor": colors["ONYX"],
-    "grid.color": colors["CELADON_GREEN"],
-    "lines.linewidth": 2.5,
-    "lines.color": colors["BITTERSWEET_SHIMMER"],
-    "patch.edgecolor": colors["DEEP_CARMINE_PINK"],
-    "patch.facecolor": colors["BITTERSWEET_SHIMMER"],
-    "axes.prop_cycle": plt.cycler('color', [
-        colors["EART_YELLOW"],
-        colors["BITTERSWEET_SHIMMER"],
-        colors["CELADON_GREEN"],
-        colors["DEEP_CARMINE_PINK"],
-        colors["ANTI_FLASH_WHITE"]
-    ])
-}
-
-plt.rcParams.update(custom_style)
-
 
 
 class Analytic_View (General_View):
@@ -117,12 +76,17 @@ class Analytic_View (General_View):
                     # Right Top Frame Components
         
         self.stride_view_top_components_right_frame = tk.Frame(self.stride_view_components_right_frame, bg=self.CELADON_GREEN)
-        self.stride_view_top_components_right_canvas = None
+        self.stride_view_top_components_right_canvas:PlotFrame|None = None
                     # Right Bottom Frame Components
         self.stride_view_bottom_components_right_frame = tk.Frame(self.stride_view_components_right_frame, bg=self.OUTER_SPACE)
         self.stride_view_bottom_components_right_frame_separator = ttk.Separator(self.stride_view_bottom_components_right_frame, orient='horizontal', style='top.TSeparator')
         self.stride_view_bottom_labels_components_right_frame = tk.Frame(self.stride_view_bottom_components_right_frame, bg=self.OUTER_SPACE)
         self.stride_view_raw_data_max_min_valor_buttom = tk.Button(self.stride_view_bottom_labels_components_right_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Valores", font=self.BLACK_REGULAR_FONT, padx=5, state='disabled', command=self._show_general_analytics)
+        self.stride_view_bottom_labels_components_show_entry_data_frame = tk.Frame(self.stride_view_bottom_labels_components_right_frame, bg=self.OUTER_SPACE)
+        self.stride_view_bottom_labels_components_modulem_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: M | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
+        self.stride_view_bottom_labels_components_modulen_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: N | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
+        self.stride_view_bottom_labels_components_moduleo_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: O | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
+        self.stride_view_bottom_labels_components_modulep_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: P | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
         
         self.stride_view_pop_win:tk.Toplevel|None = None
         self.stride_view_pop_win_top_frame:tk.Frame|None = None
@@ -184,8 +148,13 @@ class Analytic_View (General_View):
         self.stride_view_top_components_right_frame.pack(side=tk.TOP, fill='both', expand=True)
         self.stride_view_bottom_components_right_frame.pack(side=tk.BOTTOM, fill='x')
         self.stride_view_bottom_components_right_frame_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
-        self.stride_view_bottom_labels_components_right_frame.pack(side=tk.BOTTOM, anchor='e', fill=tk.BOTH)
-        self.stride_view_raw_data_max_min_valor_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=5, ipadx=5, ipady=5)
+        self.stride_view_bottom_labels_components_right_frame.pack(side=tk.BOTTOM, anchor='e', fill=tk.BOTH, padx=10)
+        self.stride_view_bottom_labels_components_show_entry_data_frame.pack(side=tk.LEFT, anchor='w', fill=tk.X)
+        self.stride_view_bottom_labels_components_modulem_label.grid(column=0, row=0, columnspan=1, padx=10, pady=5, sticky='w')
+        self.stride_view_bottom_labels_components_modulen_label.grid(column=1, row=0, columnspan=1, padx=10, pady=5, sticky='w')
+        self.stride_view_bottom_labels_components_moduleo_label.grid(column=0, row=1, columnspan=1, padx=10, pady=5, sticky='w')
+        self.stride_view_bottom_labels_components_modulep_label.grid(column=1, row=1, columnspan=1, padx=10, pady=5, sticky='w')
+        self.stride_view_raw_data_max_min_valor_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=10, ipadx=5, ipady=5)
     
     def back_to_patient_view (self):
         try:
@@ -220,7 +189,7 @@ class Analytic_View (General_View):
             pass
     
     def save_stride_view (self):
-        if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos?'):
+        if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos y generar reporte?'):
             self.controller.save_raw_stride()
             self.controller.make_report_pdf()
 
@@ -231,39 +200,45 @@ class Analytic_View (General_View):
         self.controller.data.data_time = int(num[0])
     
     def _show_general_analytics (self):
-        self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.DISABLED)
-        self.stride_view_pop_win = tk.Toplevel()
-        def on_closing():
-            self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.NORMAL)
-            self.stride_view_pop_win.destroy()
-        self.stride_view_pop_win.protocol("WM_DELETE_WINDOW", on_closing)
-        self.stride_view_pop_win.geometry("1000x600+100+200")
-        self.stride_view_pop_win.title('Analisis numéricos')
-        self.stride_view_pop_win_top_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
-        self.stride_view_pop_win_top_frame.pack(side=tk.TOP, fill=tk.X)
-        self.stride_view_pop_win_topc_frame = tk.Frame(self.stride_view_pop_win_top_frame, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
-        self.stride_view_pop_win_topc_frame.pack(side=tk.TOP, fill=tk.X)
-        close_buttom = tk.Button(self.stride_view_pop_win_topc_frame, bg=self.SMOKY_TOPAZ, activebackground=self.ONYX, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ANTI_FLASH_WHITE, text="Cerrar", font=self.BLACK_REGULAR_FONT, padx=5, command=self.close)
-        close_buttom.pack(side=tk.RIGHT, pady=10, padx=10)
-        top_separator = ttk.Separator(self.stride_view_pop_win_top_frame, orient='horizontal', style='top.TSeparator')
-        top_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
-        self.stride_view_pop_win_left_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=60, height=self.stride_view_pop_win.winfo_screenheight()-60
-        self.stride_view_pop_win_left_frame.pack(side=tk.LEFT, fill=tk.Y)
-        raw_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Min/Max", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_raw_data)
-        raw_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
-        raw_data_calc_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Metricas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.build_metrics_data)
-        raw_data_calc_buttom.pack(side=tk.TOP, pady=10, padx=10)
-        raw_data_avnz_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Graficas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_grafic)
-        raw_data_avnz_buttom.pack(side=tk.TOP, pady=10, padx=10)
-        self.stride_view_pop_win_right_frame = tk.Frame(self.stride_view_pop_win, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
-        self.stride_view_pop_win_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        self.stride_view_pop_win_rightc_frame = tk.Frame(self.stride_view_pop_win_right_frame, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
-        self.stride_view_pop_win_rightc_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        left_separator = ttk.Separator(self.stride_view_pop_win_right_frame, orient='vertical', style='top.TSeparator')
-        left_separator.pack(side=tk.LEFT, anchor='w', fill='y')
+        try:
+            self.controller.make_load_data_metrics()
+            self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.DISABLED)
+            self.stride_view_pop_win = tk.Toplevel()
+            def on_closing():
+                self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.NORMAL)
+                self.stride_view_save_buttom.configure(state=tk.NORMAL)
+                self.stride_view_pop_win.destroy()
+            self.stride_view_pop_win.protocol("WM_DELETE_WINDOW", on_closing)
+            self.stride_view_pop_win.geometry("1000x600+100+200")
+            self.stride_view_pop_win.title('Analisis numéricos')
+            self.stride_view_pop_win_top_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
+            self.stride_view_pop_win_top_frame.pack(side=tk.TOP, fill=tk.X)
+            self.stride_view_pop_win_topc_frame = tk.Frame(self.stride_view_pop_win_top_frame, bg=self.OUTER_SPACE) #, width=self.stride_view_pop_win.winfo_screenwidth()
+            self.stride_view_pop_win_topc_frame.pack(side=tk.TOP, fill=tk.X)
+            close_buttom = tk.Button(self.stride_view_pop_win_topc_frame, bg=self.SMOKY_TOPAZ, activebackground=self.ONYX, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ANTI_FLASH_WHITE, text="Cerrar", font=self.BLACK_REGULAR_FONT, padx=5, command=self.close)
+            close_buttom.pack(side=tk.RIGHT, pady=10, padx=10)
+            top_separator = ttk.Separator(self.stride_view_pop_win_top_frame, orient='horizontal', style='top.TSeparator')
+            top_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
+            self.stride_view_pop_win_left_frame = tk.Frame(self.stride_view_pop_win, bg=self.OUTER_SPACE) #, width=60, height=self.stride_view_pop_win.winfo_screenheight()-60
+            self.stride_view_pop_win_left_frame.pack(side=tk.LEFT, fill=tk.Y)
+            raw_data_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Min/Max", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_raw_data)
+            raw_data_buttom.pack(side=tk.TOP, pady=10, padx=10)
+            raw_data_calc_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Metricas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.build_metrics_data)
+            raw_data_calc_buttom.pack(side=tk.TOP, pady=10, padx=10)
+            raw_data_avnz_buttom = tk.Button(self.stride_view_pop_win_left_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Graficas", font=self.BLACK_REGULAR_FONT, padx=5, width=15, command=self.generate_grafic)
+            raw_data_avnz_buttom.pack(side=tk.TOP, pady=10, padx=10)
+            self.stride_view_pop_win_right_frame = tk.Frame(self.stride_view_pop_win, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
+            self.stride_view_pop_win_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+            self.stride_view_pop_win_rightc_frame = tk.Frame(self.stride_view_pop_win_right_frame, bg=self.CELADON_GREEN) #, width=self.stride_view_pop_win.winfo_screenwidth-60, height=self.stride_view_pop_win.winfo_screenheight()-60
+            self.stride_view_pop_win_rightc_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+            left_separator = ttk.Separator(self.stride_view_pop_win_right_frame, orient='vertical', style='top.TSeparator')
+            left_separator.pack(side=tk.LEFT, anchor='w', fill='y')
+        except:
+            self.show_error('Error', 'Parametros no adecuados para una valoración')
         
     def close(self):
         self.stride_view_raw_data_max_min_valor_buttom.configure(state=tk.NORMAL)
+        self.stride_view_save_buttom.configure(state=tk.NORMAL)
         self.stride_view_pop_win.destroy()
 
     def generate_raw_data (self):
@@ -372,28 +347,28 @@ class Analytic_View (General_View):
         title_label.grid(column=0, row=0, columnspan=8, pady=5, ipady=5)
         
         cadence_text = f'Cadencia: {self.controller.patient.cadence} pasos/minuto'
-        cadence = tk.Label(self.stride_view_pop_win_rightc_frame, text=cadence_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
-        cadence.grid(column=0, row=2, pady=2)
-        
-        rtime_text = f'Tiempo Promedio Zancasa Derecha: {self.controller.patient.right_time} segundos'
-        rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
-        rtime.grid(column=0, row=3, pady=2)
-        
-        ltime_text = f'Tiempo Promedio Zancasa Izquierda: {self.controller.patient.left_time} segundos'
-        ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
-        ltime.grid(column=0, row=4, pady=2)
+        cadence = tk.Label(self.stride_view_pop_win_rightc_frame, text=cadence_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        cadence.grid(column=0, row=2, pady=2, sticky='w', padx=10)
         
         velocity_text = f'Velocidad Media: {self.controller.patient.speed} metros/segundos'
-        velocity = tk.Label(self.stride_view_pop_win_rightc_frame, text=velocity_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
-        velocity.grid(column=1, row=2, pady=2)
+        velocity = tk.Label(self.stride_view_pop_win_rightc_frame, text=velocity_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        velocity.grid(column=0, row=3, pady=2, sticky='w', padx=10)
+        
+        rtime_text = f'Tiempo Promedio Zancasa Derecha: {self.controller.patient.right_time} segundos'
+        rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        rtime.grid(column=0, row=4, pady=2, sticky='w', padx=10)
+        
+        ltime_text = f'Tiempo Promedio Zancasa Izquierda: {self.controller.patient.left_time} segundos'
+        ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ltime.grid(column=0, row=5, pady=2, sticky='w', padx=10)
         
         rtime_text = f'Promedio Zancasa Derecha: {self.controller.patient.mean_distancer} metros'
-        rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
-        rtime.grid(column=1, row=3, pady=2)
+        rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        rtime.grid(column=0, row=6, pady=2, sticky='w', padx=10)
         
         ltime_text = f'Promedio Zancasa Izquierda: {self.controller.patient.mean_distancel} metros'
-        ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.RIGHT)
-        ltime.grid(column=1, row=4, pady=2)
+        ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
+        ltime.grid(column=0, row=7, pady=2, sticky='w', padx=10)
     
     def generate_grafic (self):
         try:
@@ -404,34 +379,3 @@ class Analytic_View (General_View):
         self.widget_pack_forget(self.stride_view_pop_win_rightc_frame)
         self.stride_view_pop_win_left_canvas = PlotFrame(self.stride_view_pop_win_rightc_frame)
         self.controller.plot_peaks()
-
-class PlotFrame():
-    def __init__(self, parent):
-        self.fig, self.ax = plt.subplots()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
-        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-        self.min = -60
-        self.max = 60
-
-    def plot_data(self, x_data, y_data, label):
-        self.ax.plot(x_data, y_data, label=label)
-        plt.ylim(self.min, self.max)
-        plt.xlabel('Tiempo (ms)')
-        plt.ylabel('Angulo (grados)')
-        y_min, y_max = plt.ylim()
-        y_ticks = np.arange(y_min, y_max + 20, 20)
-        plt.yticks(y_ticks)
-    
-    def plot_data_mark (self, x_data, y_data, label):
-        self.ax.plot(x_data, y_data, label=label, marker='o', color='#32373B')
-        plt.ylim(self.min, self.max)
-        plt.xlabel('Tiempo (ms)')
-        plt.ylabel('Angulo (grados)')
-        y_min, y_max = plt.ylim()
-        y_ticks = np.arange(y_min, y_max + 20, 20)
-        plt.yticks(y_ticks)
-    
-    def destroy_plot(self):
-        """Método para destruir el canvas y liberar recursos cuando no sea necesario."""
-        self.canvas.get_tk_widget().destroy()
-        plt.close(self.fig)

@@ -1,83 +1,49 @@
-'''import json
-from paths import get_file
-import re
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import numpy as np
-import scipy.signal as signal
+import tkinter as tk
+import time
+from paths import get_json_to_dict
+from controllers. canvas_draw import PlotCanvas
 
-file1 = "30092024230928.json"
-file2 = "30092024230250.json"
-file3 = "30092024231355.json"
+report = get_json_to_dict('4382916', '11102024195017.json')
 
-j_file = get_file("4382916", file3)
+x = report['RDTime(ms)']
+y1 = report['RDSagital']
+y2 = report['RISagital']
 
-with open(j_file, 'r') as file:
-    data = json.load(file)
+def dibujar():
+    canvas.draw_axes()
+    canvas.draw_grid()
+    xn1 = 0
+    yn1 = 0
+    xn2 = 0
+    yn2 = 0
+    for i in range(len(x)-1):
+        if i == 0:
+            xn1, yn1 = canvas.normalize_list_data(x[i], y1[i], len(x))
+            xn1, yn1 = canvas.draw_function(x[i], y1[i], len(x), "#FAB860", xn1, yn1)
+            xn2, yn2 = canvas.normalize_list_data(x[i], y2[i], len(x))
+            xn2, yn2 = canvas.draw_function(x[i], y2[i], len(x), "#C83E4D", xn2, yn2)
+        else:
+            xn1, yn1 = canvas.draw_function(x[i], y1[i], len(x), "#FAB860", xn1, yn1)
+            xn2, yn2 = canvas.draw_function(x[i], y2[i], len(x), "#C83E4D", xn2, yn2)
+        time.sleep(0.01)
+# Configuración de la ventana principal
+root = tk.Tk()
+root.title("Dibujo de Funciones en Canvas")
+root.configure(background="#32373B")
+root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
+root.bind('<Escape>', lambda event: root.state('normal'))
+root.bind('<F11>', lambda event: root.state('zoomed'))
+root.state('zoomed')
 
-max_value = np.mean(data['RDSagital'])
-peaks, _ = signal.find_peaks(data['RDSagital'], height=max_value, distance=80)
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
-peaks2, _ = signal.find_peaks(data['RISagital'], height=max_value, distance=80)
+padx, pady = 50, 50
+canvas = PlotCanvas(root)
+canvas.canvas.pack(padx=padx, pady=pady)
 
-peaks3, _ = signal.find_peaks(-np.array(data['RDSagital']), height=max_value, distance=80)
 
-peaks4, _ = signal.find_peaks(-np.array(data['RISagital']), height=max_value, distance=80)
 
-peak_values = np.array(data['RDSagital'])[peaks]
-peak_values2 = np.array(data['RISagital'])[peaks2]
-peak_values3 = np.array(data['RDSagital'])[peaks3]
-peak_values4 = np.array(data['RISagital'])[peaks4]
-
-print("Índices de los picos RD:", peaks)
-print("Valores de los picos RD:", peak_values)
-print("Cantidad de picos RD: ", len(peaks))
-print("Índices de los picos RI:", peaks2)
-print("Valores de los picos RI:", peak_values2)
-print("Cantidad de picos RI: ", len(peaks2))
-
-tiempo = data['RDTime(ms)'][peaks[-1]]
-print('Tiempo Ultimo pico RD: ', tiempo)
-
-tiempo2 = data['RITime(ms)'][peaks2[-1]]
-print('Tiempo Ultimo pico RI: ', tiempo2)
-
-cadencia = ((len(peaks2) + len(peaks))*60)/3
-print(f'Cadencia: {cadencia} pasos/minuto')
-
-plt.plot(data['RDTime(ms)'], data['RDSagital'], label='RD')
-plt.plot(data['RDTime(ms)'], data['RISagital'], label='RI')
-plt.plot(peaks*10, peak_values, "x", label='PicosRI+')
-plt.plot(peaks2*10, peak_values2, "x", label='PicosRD+')
-plt.plot(peaks3*10, peak_values3, "o", label='PicosRD-')
-plt.plot(peaks4*10, peak_values4, "o", label='PicosRI-')
-plt.xlabel("Índice")
-plt.ylabel("Valor")
-plt.legend()
-plt.show()
-'''
-
-from controllers.patient_controller import PatientController
-
-p = PatientController()
-datos = {
-    'ci': 5195292, 
-    'name': 'Alvaro Viamont Rico', 
-    'birthday': '03/12/1991', 
-    'age': '31', 
-    'gender': 'M', 
-    'phone': None, 
-    'mail': None, 
-    'right_leg_size': 0.83, 
-    'left_leg_size': 0.83, 
-    'folder_path': None, 
-    'cadence': 0, 
-    'average_time': 0, 
-    'speed': 0, 
-    'distance': 0}
-p.update_patient(**datos)
-print(p.__dict__)
-p2 = PatientController()
-print(p2.__dict__)
-p2.update_patient(**p.__dict__)
-print(p2.__dict__)
+root.update()
+dibujar()
+root.mainloop()

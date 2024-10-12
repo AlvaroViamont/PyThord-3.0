@@ -62,6 +62,16 @@ class DataController:
             'TMaxRI':0, 'TMinRI':0,
             'TMaxCI':0, 'TMinCI':0
         }
+        self.data_size = 300
+        self.data_time = 3
+        self.ldata_ipeaks = None
+        self.rdata_ipeaks = None
+        self.ldata_peaks = None
+        self.rdata_peaks = None
+        self.mean_distancer = None
+        self.mean_distancel = None
+        self.timel = None
+        self.timer = None
         
     def control_data_rows(self):
         for keys in self.stride_raw_data.keys():

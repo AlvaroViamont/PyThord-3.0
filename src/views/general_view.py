@@ -49,6 +49,7 @@ class General_View:
                         selectforeground=self.ONYX) 
         
         self.REGULAR_FONT = fnt.Font(family='Lato', size=16)
+        self.SMALL_REGULAR_FONT = fnt.Font(family='Lato', size=12)
         self.BLACK_REGULAR_FONT = fnt.Font(family='Lato Black', size=16)
         self.TITLE_FONT = fnt.Font(family='Lato Black', size=62)
         self.SUB_TITLE_FONT = fnt.Font(family='Lato Black', size=32)

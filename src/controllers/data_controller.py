@@ -39,6 +39,10 @@ class DataController:
         self.timel:float|None = None
         self.timer:float|None = None
     
+    def set_distance_time (self, time_teked:int):
+        self.data_size = time_teked*100
+        self.data_time = time_teked
+    
     def clear (self):
         self.stride_raw_data = {
                 'RDIndex':[], 'RDTime(ms)':[], 'RDSagital':[], 'RDFrontal':[],

@@ -14,7 +14,7 @@ class Analytic_View (General_View):
             if self.show_ok_cancel("Quit", "Do you want to quit?"):
                 plt.close('all')
                 self.root.destroy()
-
+        
         self.root.protocol("WM_DELETE_WINDOW", on_closing)
         # Main stride view
         self.stride_view_top_frame = tk.Frame(self.root, bg=self.ONYX, width=self.root.winfo_screenwidth())
@@ -63,12 +63,6 @@ class Analytic_View (General_View):
         self.stride_view_joints_radiobuttom_label = tk.Label(self.stride_view_components_left_frame, text='Articulaciones:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
         self.stride_view_hip_joint_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Cadera', variable=self.joints_var, value=0, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
         self.stride_view_knee_joint_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Rodilla', variable=self.joints_var, value=1, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
-        
-        self.laterality_var = tk.IntVar()
-        self.stride_view_laterality_radiobuttom_label = tk.Label(self.stride_view_components_left_frame, text='Lateralidad:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
-        self.stride_view_left_laterality_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Izquierda', variable=self.laterality_var, value=2, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
-        self.stride_view_right_laterality_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Derecha', variable=self.laterality_var, value=1, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
-        self.stride_view_ignore_laterality_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='~graf', variable=self.laterality_var, value=0, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
 
                 # Right Frame Components
         self.stride_view_components_right_frame = tk.Frame(self.stride_view_components_frame, bg=self.CELADON_GREEN)
@@ -82,11 +76,6 @@ class Analytic_View (General_View):
         self.stride_view_bottom_components_right_frame_separator = ttk.Separator(self.stride_view_bottom_components_right_frame, orient='horizontal', style='top.TSeparator')
         self.stride_view_bottom_labels_components_right_frame = tk.Frame(self.stride_view_bottom_components_right_frame, bg=self.OUTER_SPACE)
         self.stride_view_raw_data_max_min_valor_buttom = tk.Button(self.stride_view_bottom_labels_components_right_frame, bg=self.ONYX, activebackground=self.ANTI_FLASH_WHITE, fg=self.ANTI_FLASH_WHITE, activeforeground=self.ONYX, text="Valores", font=self.BLACK_REGULAR_FONT, padx=5, state='disabled', command=self._show_general_analytics)
-        self.stride_view_bottom_labels_components_show_entry_data_frame = tk.Frame(self.stride_view_bottom_labels_components_right_frame, bg=self.OUTER_SPACE)
-        self.stride_view_bottom_labels_components_modulem_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: M | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
-        self.stride_view_bottom_labels_components_modulen_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: N | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
-        self.stride_view_bottom_labels_components_moduleo_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: O | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
-        self.stride_view_bottom_labels_components_modulep_label = tk.Label(self.stride_view_bottom_labels_components_show_entry_data_frame, text='Modulo: P | Posición: - | Sagital: - | Frontal: -', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.OUTER_SPACE, justify=tk.LEFT)
         
         self.stride_view_pop_win:tk.Toplevel|None = None
         self.stride_view_pop_win_top_frame:tk.Frame|None = None
@@ -102,7 +91,6 @@ class Analytic_View (General_View):
         self.stride_view_serial_conection_buttom.configure(command=self.create_canvas)
         self.stride_view_start_collection_buttom.configure(command=self.controller.collect_data)
         self.stride_view_save_buttom.configure(command=self.save_stride_view)
-        self.stride_view_time_combobox.bind("<<ComboboxSelected>>", self.time_selected)
     
     def build_main_stride_view (self):
         self.widget_pack_forget(self.root)
@@ -140,20 +128,11 @@ class Analytic_View (General_View):
         self.stride_view_joints_radiobuttom_label.grid(column=0, row=3, columnspan=2, padx=5, pady=10, sticky='w')
         self.stride_view_hip_joint_radiobuttom.grid(column=0, row=4, columnspan=1, padx=5, pady=10, sticky='w')
         self.stride_view_knee_joint_radiobuttom.grid(column=1, row=4, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_laterality_radiobuttom_label.grid(column=0, row=5, columnspan=2, padx=5, pady=10, sticky='w')
-        self.stride_view_left_laterality_radiobuttom.grid(column=0, row=6, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_right_laterality_radiobuttom.grid(column=1, row=6, columnspan=1, padx=5, pady=10, sticky='w')
-        self.stride_view_ignore_laterality_radiobuttom.grid(column=2, row=6, columnspan=1, padx=5, pady=10, sticky='w')
         self.stride_view_left_components_right_frame_separator.pack(side=tk.LEFT, fill='y')
         self.stride_view_top_components_right_frame.pack(side=tk.TOP, fill='both', expand=True)
         self.stride_view_bottom_components_right_frame.pack(side=tk.BOTTOM, fill='x')
         self.stride_view_bottom_components_right_frame_separator.pack(side=tk.TOP, anchor='e', fill='x', expand=True)
         self.stride_view_bottom_labels_components_right_frame.pack(side=tk.BOTTOM, anchor='e', fill=tk.BOTH, padx=10)
-        self.stride_view_bottom_labels_components_show_entry_data_frame.pack(side=tk.LEFT, anchor='w', fill=tk.X)
-        self.stride_view_bottom_labels_components_modulem_label.grid(column=0, row=0, columnspan=1, padx=10, pady=5, sticky='w')
-        self.stride_view_bottom_labels_components_modulen_label.grid(column=1, row=0, columnspan=1, padx=10, pady=5, sticky='w')
-        self.stride_view_bottom_labels_components_moduleo_label.grid(column=0, row=1, columnspan=1, padx=10, pady=5, sticky='w')
-        self.stride_view_bottom_labels_components_modulep_label.grid(column=1, row=1, columnspan=1, padx=10, pady=5, sticky='w')
         self.stride_view_raw_data_max_min_valor_buttom.pack(side=tk.RIGHT, anchor='e', padx=5, pady=10, ipadx=5, ipady=5)
     
     def back_to_patient_view (self):
@@ -166,25 +145,15 @@ class Analytic_View (General_View):
     
     def create_canvas (self):
         self.controller.get_conection()
-        if not self.controller.connection_status:
-            try:
-                self.stride_view_top_components_right_canvas.destroy_plot()
-            except:
-                pass
-            self.new_canvas()
-        else:
-            try:
-                self.stride_view_serial_data_taked_label.config(text='')
-                self.stride_view_top_components_right_canvas.destroy_plot()
-            except:
-                pass
+        if self.controller.connection_status:
+            self.show_error('Error', 'No se pudo conectar, verifique el puerto')
     
     def new_canvas (self):
         self.stride_view_top_components_right_canvas = PlotFrame(self.stride_view_top_components_right_frame)
 
     def upload_plot_radiobuttoms (self):
         try:
-            self.controller.update_plot(self.motion_planes_var.get(), self.joints_var.get(), self.laterality_var.get())
+            self.controller.update_plot(self.motion_planes_var.get(), self.joints_var.get(), 0)
         except:
             pass
     
@@ -192,12 +161,6 @@ class Analytic_View (General_View):
         if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos y generar reporte?'):
             self.controller.save_raw_stride()
             self.controller.make_report_pdf()
-
-    def time_selected (self, event):
-        num = self.stride_view_time_combobox.get().split(" ")
-        time = int(num[0])*100
-        self.controller.data.data_size = time
-        self.controller.data.data_time = int(num[0])
     
     def _show_general_analytics (self):
         try:

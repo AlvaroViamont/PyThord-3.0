@@ -16,6 +16,7 @@ import tkinter as tk
 from datetime import datetime
 import threading
 import time
+import matplotlib.animation as animation
 
 class AppController:
     def __init__(self, user_model, patient_model, stride_model, user_view=None, patient_view=None, stride_view=None):
@@ -35,6 +36,24 @@ class AppController:
         
         self.connection_status:bool = True
         self.thread:threading.Thread|None = None
+        self.thread2:threading.Thread|None = None
+        self.ani:animation.FuncAnimation|None = None
+        
+        self.auxiliar_list_x:list = []
+        self.auxiliar_list_y:list = []
+        self.auxiliar_x = 0
+        self.auxiliar_y = 0
+        self.RI = {
+            'Time': [],
+            'Sagital': [],
+            'Frontal': []
+        }
+
+        self.RD = {
+            'Time': [],
+            'Sagital': [],
+            'Frontal': []
+}
     
     def logup_redirection (self):
         self.login_direction = 0
@@ -271,6 +290,18 @@ class AppController:
         self.patient_view.widget_grid_forget(self.patient_view.patient_search_view_conteiner_frame)
         self.patient_view.build_main_patient_view()
     
+    def _start_grafic (self, frame):
+        self.stride_view.stride_view_top_components_right_canvas.ax.clear()
+        self.auxiliar_list_x.append(self.auxiliar_x*10)
+        self.auxiliar_list_y.append(self.auxiliar_y)
+        self.stride_view.stride_view_top_components_right_canvas.plot_data(self.auxiliar_list_x, self.auxiliar_list_y, 'Demo')
+        self.stride_view.stride_view_top_components_right_canvas.ax.grid(True)
+        self.stride_view.stride_view_top_components_right_canvas.ax.legend()
+        self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
+        self.auxiliar_x += 1
+        if self.auxiliar_x > 50:
+            self.ani.event_source.stop()
+    
     def get_conection (self):
         if self.connection_status:
             self.serial.get_connection()
@@ -280,19 +311,31 @@ class AppController:
                 self.stride_view.stride_view_serial_conection_label.configure(text=f"{self.serial.port}")
                 self.stride_view.stride_view_serial_conection_buttom.configure(text='Desconectar')
                 self.stride_view.stride_view_start_collection_buttom.configure(state='normal')
+                try:
+                    self.stride_view.stride_view_top_components_right_canvas.destroy_plot()
+                except:
+                    pass
+                self.stride_view.new_canvas()
+                self.ani = animation.FuncAnimation(self.stride_view.stride_view_top_components_right_canvas.fig, self._start_grafic, interval=10, cache_frame_data=False)
+                self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
         else:
             if self.thread is not None and self.thread.is_alive():
-                self.thread.join()
+                self.thread.join(timeout=1)
             self.stride_view.stride_view_serial_conection_label.configure(text="Sin Conexión")
             self.stride_view.stride_view_serial_conection_buttom.configure(text='Conectar')
             self.stride_view.stride_view_start_collection_buttom.configure(state='disabled')
             self.serial.disconect()
             self.data.clear()
             self.connection_status = True
+            self.ani = None
+            try:
+                self.stride_view.stride_view_top_components_right_canvas.destroy_plot()
+            except:
+                pass
     
     def update_plot(self, graph_type, joint, laterality):
+        self.stride_view.stride_view_top_components_right_canvas.ax.clear()
         try:
-            self.stride_view.stride_view_top_components_right_canvas.ax.clear()
             if graph_type == 0:
                 if joint == 0:
                     if laterality in [0, 1]:
@@ -324,88 +367,114 @@ class AppController:
     def _data_collection_task (self):
         self.serial.connection.reset_input_buffer()
         self.serial.connection.reset_output_buffer()
+        # self.data.data_size = int(self.stride_view.stride_view_time_combobox.get().split(" ")[0])*100
+        # self.data.data_time = int(self.stride_view.stride_view_time_combobox.get().split(" ")[0])
+        self.data.set_distance_time(int(self.stride_view.stride_view_time_combobox.get().split(" ")[0]))
         self.serial.connection.write(f'{self.data.data_size}'.encode('utf-8'))
         self.stride_view.stride_view_serial_data_taked_label.config(text='Recibiendo Datos')
-        try:
-            while True:
-                    # Leer la línea completa de datos
+        start_time = time.time()
+        print(start_time)
+        end_time = self.data.data_time * 2
+        while True:
+            try:
                 line = self.serial.connection.readline().decode('utf-8')
-                # Separar la línea en sus componentes
-                try:
-                    decoder, cont, x, y = line.strip().split(',')
-                    cont = int(cont)
-                    ltime = cont*10
-                    x = int(x)
-                    y = int(y)
-                    if decoder == "M":
-                        if cont <= self.data.data_size and cont not in self.data.stride_raw_data['RIIndex']:
-                            self.data.stride_raw_data['RIIndex'].append(cont)
-                            self.data.stride_raw_data['RITime(ms)'].append(ltime)
-                            self.data.stride_raw_data['RISagital'].append(x*-1)
-                            self.data.stride_raw_data['RIFrontal'].append(y)
-                            self.stride_view.stride_view_bottom_labels_components_modulem_label.config(text=f'Modulo: M | Posición: {cont} | Sagital: {x*-1} | Frontal: {y}')
-                            self.stride_view.stride_view_bottom_labels_components_modulem_label.update()
-                    elif decoder == "N":
-                        if cont <= self.data.data_size and cont not in self.data.stride_raw_data['RDIndex']:
-                            self.data.stride_raw_data['RDIndex'].append(cont)
-                            self.data.stride_raw_data['RDTime(ms)'].append(ltime)
-                            self.data.stride_raw_data['RDSagital'].append(x)
-                            self.data.stride_raw_data['RDFrontal'].append(y)
-                            self.stride_view.stride_view_bottom_labels_components_modulen_label.config(text=f'Modulo: N | Posición: {cont} | Sagital: {x} | Frontal: {y}')
-                            self.stride_view.stride_view_bottom_labels_components_modulen_label.update()
-                    elif decoder == "O":
-                        if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CIIndex']:
-                            self.data.stride_raw_data['CIIndex'].append(cont)
-                            self.data.stride_raw_data['CITime(ms)'].append(ltime)
-                            self.data.stride_raw_data['CISagital'].append(x*-1)
-                            self.data.stride_raw_data['CIFrontal'].append(y)
-                            self.stride_view.stride_view_bottom_labels_components_moduleo_label.config(text=f'Modulo: O | Posición: {cont} | Sagital: {x*-1} | Frontal: {y}')
-                            self.stride_view.stride_view_bottom_labels_components_moduleo_label.update()
-                    elif decoder == "P":
-                        if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CDIndex']:
-                            self.data.stride_raw_data['CDIndex'].append(cont)
-                            self.data.stride_raw_data['CDTime(ms)'].append(ltime)
-                            self.data.stride_raw_data['CDSagital'].append(x)
-                            self.data.stride_raw_data['CDFrontal'].append(y)
-                            self.stride_view.stride_view_bottom_labels_components_modulep_label.config(text=f'Modulo: P | Posición: {cont} | Sagital: {x} | Frontal: {y}')
-                            self.stride_view.stride_view_bottom_labels_components_modulep_label.update()
-                except Exception as e:
-                    print (e)
-                    continue
-                try:
-                    if all(self.data.stride_raw_data[key][-1] == self.data.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
-                        self.data.control_data_rows()
-                        self.data.transform_data()
-                        self.data.get_min_and_max()
-                        break
-                except Exception as e:
-                    print(e)
-                    continue
-                
-            graph_type =self.stride_view.motion_planes_var.get()
-            joint = self.stride_view.joints_var.get()
-            laterality = self.stride_view.laterality_var.get()
-            self.update_plot(graph_type, joint, laterality)
-            self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
-            self.stride_view.stride_view_raw_data_max_min_valor_buttom.configure(state='normal')
-            return True
-        except Exception as e:
-            print(e)
-            pass
+                decoder, cont, x, y = line.strip().split(',')
+                cont = int(cont)
+                ltime = cont*10
+                x = float(x)
+                y = float(y)
+                if decoder == "M":
+                    if cont <= self.data.data_size and cont not in self.data.stride_raw_data['RIIndex']:
+                        self.data.stride_raw_data['RIIndex'].append(cont)
+                        self.data.stride_raw_data['RITime(ms)'].append(ltime)
+                        self.data.stride_raw_data['RISagital'].append(x*-1)
+                        self.data.stride_raw_data['RIFrontal'].append(y)
+                        #self.stride_view.stride_view_bottom_labels_components_modulem_label.config(text=f'Modulo: M | Posición: {cont} | Sagital: {x*-1} | Frontal: {y}')
+                        #self.stride_view.stride_view_bottom_labels_components_modulem_label.update()
+                elif decoder == "N":
+                    if cont <= self.data.data_size and cont not in self.data.stride_raw_data['RDIndex']:
+                        self.data.stride_raw_data['RDIndex'].append(cont)
+                        self.data.stride_raw_data['RDTime(ms)'].append(ltime)
+                        self.data.stride_raw_data['RDSagital'].append(x)
+                        self.data.stride_raw_data['RDFrontal'].append(y)
+                        #self.stride_view.stride_view_bottom_labels_components_modulen_label.config(text=f'Modulo: N | Posición: {cont} | Sagital: {x} | Frontal: {y}')
+                        #self.stride_view.stride_view_bottom_labels_components_modulen_label.update()
+                elif decoder == "O":
+                    if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CIIndex']:
+                        self.data.stride_raw_data['CIIndex'].append(cont)
+                        self.data.stride_raw_data['CITime(ms)'].append(ltime)
+                        self.data.stride_raw_data['CISagital'].append(x*-1)
+                        self.data.stride_raw_data['CIFrontal'].append(y)
+                        #self.stride_view.stride_view_bottom_labels_components_moduleo_label.config(text=f'Modulo: O | Posición: {cont} | Sagital: {x*-1} | Frontal: {y}')
+                        #self.stride_view.stride_view_bottom_labels_components_moduleo_label.update()
+                elif decoder == "P":
+                    if cont <= self.data.data_size and cont not in self.data.stride_raw_data['CDIndex']:
+                        self.data.stride_raw_data['CDIndex'].append(cont)
+                        self.data.stride_raw_data['CDTime(ms)'].append(ltime)
+                        self.data.stride_raw_data['CDSagital'].append(x)
+                        self.data.stride_raw_data['CDFrontal'].append(y)
+                        #self.stride_view.stride_view_bottom_labels_components_modulep_label.config(text=f'Modulo: P | Posición: {cont} | Sagital: {x} | Frontal: {y}')
+                        #self.stride_view.stride_view_bottom_labels_components_modulep_label.update()
+            except Exception as e:
+                print (e)
+            '''try:
+                if all(self.data.stride_raw_data[key][-1] == self.data.data_size for key in ['RDIndex', 'CDIndex', 'RIIndex', 'CIIndex']):
+                    self.data.control_data_rows()
+                    self.data.transform_data()
+                    self.data.get_min_and_max()
+                    self.ani.event_source.stop()
+                    break
+            except Exception as e:
+                print(e)
+                continue'''
+            if time.time() - start_time > end_time:
+                print(time.time())
+                self.data.control_data_rows()
+                self.data.transform_data()
+                self.data.get_min_and_max()
+                break
+        graph_type =self.stride_view.motion_planes_var.get()
+        joint = self.stride_view.joints_var.get()
+        self.update_plot(graph_type, joint, 0)
+        self.stride_view.stride_view_serial_data_taked_label.config(text='Envio Finalizado')
+        self.stride_view.stride_view_raw_data_max_min_valor_buttom.configure(state='normal')
+        self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
+        return True
+    
+    def _draw_real_data (self, frame):
+        '''self.RI['Time'] = self.data.stride_raw_data['RITime(ms)']
+        self.RI['Sagital'] = self.data.stride_raw_data['RISagital']
+        self.RD['Time'] = self.data.stride_raw_data['RDTime(ms)']
+        self.RD['Sagital'] = self.data.stride_raw_data['RDSagital']
+        self.stride_view.stride_view_top_components_right_canvas.ax.clear()
+        if self.RI['Time'] and self.RI['Sagital']:
+            self.stride_view.stride_view_top_components_right_canvas.plot_data(self.RI['Time'], self.RI['Sagital'], "Rodilla Izquierda Sagital")
+        if self.RD['Time'] and self.RD['Sagital']:
+            self.stride_view.stride_view_top_components_right_canvas.plot_data(self.RD['Time'], self.RD['Sagital'], "Rodilla Derecha Sagital")
+        '''
+        graph_type =self.stride_view.motion_planes_var.get()
+        joint = self.stride_view.joints_var.get()
+        self.update_plot(graph_type, joint, 0)
+
     
     def collect_data(self):
         self.stride_view.stride_view_save_buttom.configure(state='disabled')
         self.stride_view.stride_view_raw_data_max_min_valor_buttom.configure(state='disabled')
+        self.stride_view.stride_view_top_components_right_canvas.destroy_plot()
+        self.stride_view.new_canvas()
+        self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
         if self.stride_view.stride_view_start_collection_buttom['text'] == 'Iniciar' and self.thread is None:
             self.data.clear()
-            self.stride_view.stride_view_start_collection_buttom.configure(text='Reset')
             self.thread = threading.Thread(target=self._data_collection_task, daemon=True)
             self.thread.start()
+            self.stride_view.stride_view_start_collection_buttom.configure(text='Reset')
+            self.ani = animation.FuncAnimation(self.stride_view.stride_view_top_components_right_canvas.fig, self._draw_real_data, interval=10, cache_frame_data=False)
+            self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
         elif self.stride_view.stride_view_start_collection_buttom['text'] == 'Reset':
             self.serial.reset_connection()
             if self.thread is not None and self.thread.is_alive():
                 self.stride_view.stride_view_serial_data_taked_label.config(text='')
-                self.thread.join()
+                self.thread.join(timeout=1)
             self.thread = None
             time.sleep(2)
             self.data.clear()

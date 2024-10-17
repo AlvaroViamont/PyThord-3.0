@@ -12,6 +12,13 @@ class Analytic_View (General_View):
         super().__init__(root, controller)
         def on_closing():
             if self.show_ok_cancel("Quit", "Do you want to quit?"):
+                if self.controller.thread is not None and self.controller.thread.is_alive():
+                    self.controller.thread.join(timeout=1)
+                if self.controller.thread2 is not None and self.controller.thread2.is_alive():
+                    self.controller.thread2.join(timeout=1)
+                self.controller.thread = None
+                self.controller.thread2 = None
+                self.controller.ani = None
                 plt.close('all')
                 self.root.destroy()
         
@@ -63,6 +70,42 @@ class Analytic_View (General_View):
         self.stride_view_joints_radiobuttom_label = tk.Label(self.stride_view_components_left_frame, text='Articulaciones:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
         self.stride_view_hip_joint_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Cadera', variable=self.joints_var, value=0, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
         self.stride_view_knee_joint_radiobuttom = tk.Radiobutton(self.stride_view_components_left_frame, font=self.REGULAR_FONT, foreground=self.ANTI_FLASH_WHITE, bg=self.ONYX, text='Rodilla', variable=self.joints_var, value=1, selectcolor=self.BITTERSWEET_SHIMMER, command=self.upload_plot_radiobuttoms)
+        
+        self.stride_view_battery_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.ONYX)
+        self.stride_view_battery_separator = ttk.Separator(self.stride_view_battery_frame, orient='horizontal', style='top.TSeparator')
+        
+        self.max_widht = 24
+        self.rd_int_var = tk.IntVar()
+        self.rd_int_var.set(10)
+        self.stride_view_rd_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.OUTER_SPACE, width=300, height=20)
+        self.stride_view_rd_frame.pack_propagate(False)
+        self.stride_view_rd_label = tk.Label(self.stride_view_rd_frame, text='RD: ', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT, width=5)
+        self.stride_view_rd_bar_label = tk.Label(self.stride_view_rd_frame, bg=self.BATTERY_COLOR_LOW, width=int(self.max_widht*0.1))
+        self.stride_view_rd_var_label = tk.Label(self.stride_view_rd_frame, bg=self.ONYX, text=f'{self.rd_int_var.get()} %', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, width=5)
+
+        self.ri_int_var = tk.IntVar()
+        self.ri_int_var.set(30)
+        self.stride_view_ri_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.OUTER_SPACE, width=300, height=20)
+        self.stride_view_ri_frame.pack_propagate(False)
+        self.stride_view_ri_label = tk.Label(self.stride_view_ri_frame, text='RI: ', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT, width=5)
+        self.stride_view_ri_bar_label = tk.Label(self.stride_view_ri_frame, bg=self.BATTERY_COLOR_MID, width=int(self.max_widht*0.3))
+        self.stride_view_ri_var_label = tk.Label(self.stride_view_ri_frame, bg=self.ONYX, text=f'{self.ri_int_var.get()} %', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, width=5)
+
+        self.cd_int_var = tk.IntVar()
+        self.cd_int_var.set(60)
+        self.stride_view_cd_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.OUTER_SPACE, width=300, height=20)
+        self.stride_view_cd_frame.pack_propagate(False)
+        self.stride_view_cd_label = tk.Label(self.stride_view_cd_frame, text='CD: ', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT, width=5)
+        self.stride_view_cd_bar_label = tk.Label(self.stride_view_cd_frame, bg=self.BATTERY_COLOR_TOP, width=int(self.max_widht*0.6))
+        self.stride_view_cd_var_label = tk.Label(self.stride_view_cd_frame, bg=self.ONYX, text=f'{self.cd_int_var.get()} %', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, width=5)
+
+        self.ci_int_var = tk.IntVar()
+        self.ci_int_var.set(100)
+        self.stride_view_ci_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.OUTER_SPACE, width=300, height=20)
+        self.stride_view_ci_frame.pack_propagate(False)
+        self.stride_view_ci_label = tk.Label(self.stride_view_ci_frame, text='CI: ', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT, width=5)
+        self.stride_view_ci_bar_label = tk.Label(self.stride_view_ci_frame, bg=self.BATTERY_COLOR_TOP, width=self.max_widht)
+        self.stride_view_ci_var_label = tk.Label(self.stride_view_ci_frame, bg=self.ONYX, text=f'{self.ci_int_var.get()} %', foreground=self.ANTI_FLASH_WHITE, font=self.SMALL_REGULAR_FONT, width=5)
 
                 # Right Frame Components
         self.stride_view_components_right_frame = tk.Frame(self.stride_view_components_frame, bg=self.CELADON_GREEN)
@@ -127,6 +170,30 @@ class Analytic_View (General_View):
         self.stride_view_joints_radiobuttom_label.grid(column=0, row=3, columnspan=2, padx=5, pady=10, sticky='w')
         self.stride_view_hip_joint_radiobuttom.grid(column=0, row=4, columnspan=1, padx=5, pady=10, sticky='w')
         self.stride_view_knee_joint_radiobuttom.grid(column=1, row=4, columnspan=1, padx=5, pady=10, sticky='w')
+        
+        self.stride_view_battery_frame.grid(column=0, row=5, columnspan=3, pady=20, sticky='we')
+        self.stride_view_battery_separator.pack(side=tk.BOTTOM, fill='x', expand=True)
+
+        self.stride_view_rd_frame.grid(column=0, row=6, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_rd_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_rd_bar_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_rd_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
+
+        self.stride_view_ri_frame.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_ri_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_ri_bar_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_ri_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
+
+        self.stride_view_cd_frame.grid(column=0, row=8, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_cd_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_cd_bar_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_cd_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
+        
+        self.stride_view_ci_frame.grid(column=0, row=9, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_ci_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_ci_bar_label.pack(side=tk.LEFT, anchor='w')
+        self.stride_view_ci_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
+        
         self.stride_view_left_components_right_frame_separator.pack(side=tk.LEFT, fill='y')
         self.stride_view_top_components_right_frame.pack(side=tk.TOP, fill='both', expand=True)
         self.stride_view_bottom_components_right_frame.pack(side=tk.BOTTOM, fill='x')

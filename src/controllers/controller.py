@@ -39,6 +39,14 @@ class AppController:
         self.thread2:threading.Thread|None = None
         self.ani:animation.FuncAnimation|None = None
         
+        self.battery_code = 852
+        self.battery_level = {
+            'M':1,
+            'N':1,
+            'O':1,
+            'P':1
+        }
+        
         self.auxiliar_list_x:list = []
         self.auxiliar_list_y:list = []
         self.auxiliar_x = 0
@@ -53,8 +61,8 @@ class AppController:
             'Time': [],
             'Sagital': [],
             'Frontal': []
-}
-    
+        }
+
     def logup_redirection (self):
         self.login_direction = 0
         self.user_view.login_view()
@@ -302,6 +310,47 @@ class AppController:
         if self.auxiliar_x > 50:
             self.ani.event_source.stop()
     
+    def _change_label_colors (self, value:int):
+        if value < 25:
+            return self.stride_view.BATTERY_COLOR_LOW
+        if value < 50:
+            return self.stride_view.BATTERY_COLOR_MID
+        return self.stride_view.BATTERY_COLOR_TOP
+    
+    def _get_battery_values(self):
+        self.serial.connection.reset_input_buffer()
+        self.serial.connection.reset_output_buffer()
+        self.serial.connection.write(f'{self.battery_code}'.encode('utf-8'))
+        start_time = time.time()
+        while True:
+            try:
+                line = self.serial.connection.readline().decode('utf-8')
+                decoder, battery, _, _ = line.strip().split(',')
+                self.battery_level[decoder] = battery
+            except:
+                pass
+            if time.time() - start_time > 2:
+                break
+        for key, value in self.battery_level.items():
+            result = int(self.stride_view.max_widht * (value//100))
+            if key == 'M':
+                self.stride_view.stride_view_ri_bar_label.config(width=result)
+                self.stride_view.stride_view_ri_bar_label.config(bg=self._change_label_colors(value))
+                self.stride_view.stride_view_ri_var_label.config(text=f'{value} %')
+            if key == 'N':
+                self.stride_view.stride_view_rd_bar_label.config(width=result)
+                self.stride_view.stride_view_rd_bar_label.config(bg=self._change_label_colors(value))
+                self.stride_view.stride_view_rd_var_label.config(text=f'{value} %')
+            if key == 'O':
+                self.stride_view.stride_view_ci_bar_label.config(width=result)
+                self.stride_view.stride_view_ci_bar_label.config(bg=self._change_label_colors(value))
+                self.stride_view.stride_view_ci_var_label.config(text=f'{value} %')
+            if key == 'P':
+                self.stride_view.stride_view_cd_bar_label.config(width=result)
+                self.stride_view.stride_view_cd_bar_label.config(bg=self._change_label_colors(value))
+                self.stride_view.stride_view_cd_var_label.config(text=f'{value} %')
+        return True
+    
     def get_conection (self):
         if self.connection_status:
             self.serial.get_connection()
@@ -316,11 +365,17 @@ class AppController:
                 except:
                     pass
                 self.stride_view.new_canvas()
+                self.thread2 = threading.Thread(target=self._get_battery_values, daemon=True)
+                self.thread2.start()
                 self.ani = animation.FuncAnimation(self.stride_view.stride_view_top_components_right_canvas.fig, self._start_grafic, interval=10, cache_frame_data=False)
                 self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
         else:
             if self.thread is not None and self.thread.is_alive():
                 self.thread.join(timeout=1)
+            if self.thread2 is not None and self.thread2.is_alive():
+                self.thread2.join(timeout=1)
+            self.thread = None
+            self.thread2 = None
             self.stride_view.stride_view_serial_conection_label.configure(text="Sin Conexión")
             self.stride_view.stride_view_serial_conection_buttom.configure(text='Conectar')
             self.stride_view.stride_view_start_collection_buttom.configure(state='disabled')
@@ -433,6 +488,9 @@ class AppController:
         self.stride_view.new_canvas()
         self.stride_view.stride_view_top_components_right_canvas.canvas.draw()
         if self.stride_view.stride_view_start_collection_buttom['text'] == 'Iniciar' and self.thread is None:
+            if self.thread2 is not None and self.thread2.is_alive():
+                self.thread2.join(timeout=1)
+            self.thread2 = None
             self.data.clear()
             self.thread = threading.Thread(target=self._data_collection_task, daemon=True)
             self.thread.start()
@@ -445,6 +503,8 @@ class AppController:
                 self.stride_view.stride_view_serial_data_taked_label.config(text='')
                 self.thread.join(timeout=1)
             self.thread = None
+            self.thread2 = threading.Thread(target=self._get_battery_values, daemon=True)
+            self.thread2.start()
             time.sleep(2)
             self.data.clear()
             self.stride_view.stride_view_top_components_right_canvas.destroy_plot()

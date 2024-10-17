@@ -17,6 +17,9 @@ class General_View:
         self.BITTERSWEET_SHIMMER = "#C83E4D"
         self.SMOKY_TOPAZ = "#935A5C"
         self.CELADON_GREEN = "#83A598"
+        self.BATTERY_COLOR_TOP = "#2E8B57"
+        self.BATTERY_COLOR_MID = "#f48a01"
+        self.BATTERY_COLOR_LOW =  "#EF3038"
 
         self.IMG_LOGO = ICON_LOGO_PATH
         self.IMG_F_PP_01 = IMG_F_PP_01_PATH

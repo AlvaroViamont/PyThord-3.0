@@ -326,7 +326,7 @@ class AppController:
             try:
                 line = self.serial.connection.readline().decode('utf-8')
                 decoder, battery, _, _ = line.strip().split(',')
-                self.battery_level[decoder] = battery
+                self.battery_level[decoder] = int(battery)
             except:
                 pass
             if time.time() - start_time > 2:

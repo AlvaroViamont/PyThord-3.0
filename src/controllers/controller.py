@@ -332,7 +332,7 @@ class AppController:
             if time.time() - start_time > 2:
                 break
         for key, value in self.battery_level.items():
-            result = int(self.stride_view.max_widht * (value//100))
+            result = int(self.stride_view.max_widht * (value/100))
             if key == 'M':
                 self.stride_view.stride_view_ri_bar_label.config(width=result)
                 self.stride_view.stride_view_ri_bar_label.config(bg=self._change_label_colors(value))

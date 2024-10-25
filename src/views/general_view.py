@@ -161,3 +161,6 @@ class General_View:
     
     def show_ok_cancel (self, tittle, message):
         return messagebox.askokcancel(tittle, message)
+
+    def show_alert(self, tittle, message):
+        return messagebox.showwarning(tittle, message)

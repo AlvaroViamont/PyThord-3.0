@@ -287,28 +287,36 @@ class Analytic_View (General_View):
             return label
 
         # Encabezados principales
-        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Derecha Sagital', self.SUB_TITLE_FONT, self.CELADON_GREEN, row=0, col=1, colspan=8, justify=tk.CENTER)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.SUB_TITLE_FONT, self.CELADON_GREEN, row=0, col=9, colspan=8, justify=tk.CENTER)
-
+        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Derecha Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=0, col=1, colspan=8, justify=tk.CENTER)
         # Sub-encabezados
         create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=1, colspan=4, justify=tk.CENTER)
         create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=5, colspan=4, justify=tk.CENTER)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=9, colspan=4, justify=tk.CENTER)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=13, colspan=4, justify=tk.CENTER)
 
         # Etiquetas de filas para datos mínimos y máximos
         create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=2, col=0, justify=tk.RIGHT)
         create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=3, col=0, justify=tk.RIGHT)
+        
+        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=4, col=1, colspan=8, justify=tk.CENTER)
+        
+        create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=1, colspan=4, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=5, colspan=4, justify=tk.CENTER)
+        
+        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=6, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=7, col=0, justify=tk.RIGHT)
 
         # Datos mínimos y máximos organizados
         data_keys = {
             'Mínimos': {
                 'RD': ['MinRD', 'MinCD'],
                 'RI': ['MinRI', 'MinCI'],
+                'CD': ['MinRD', 'MinCD'],
+                'CI': ['MinRI', 'MinCI']
             },
             'Máximos': {
                 'RD': ['MaxRD', 'MaxCD'],
                 'RI': ['MaxRI', 'MaxCI'],
+                'CD': ['MinRD', 'MinCD'],
+                'CI': ['MinRI', 'MinCI']
             }
         }
 
@@ -316,21 +324,27 @@ class Analytic_View (General_View):
         col_mapping = {
             'MinRD': 1, 'MaxRD': 1,
             'MinCD': 5, 'MaxCD': 5,
-            'MinRI': 9, 'MaxRI': 9,
-            'MinCI': 13, 'MaxCI': 13
+            'MinRI': 1, 'MaxRI': 1,
+            'MinCI': 5, 'MaxCI': 5
+        }
+        row_mapping = {
+            'MinRD': 2, 'MaxRD': 3,
+            'MinCD': 2, 'MaxCD': 3,
+            'MinRI': 6, 'MaxRI': 7,
+            'MinCI': 6, 'MaxCI': 7
         }
 
         # Insertar datos mínimos
         for _, data in data_keys['Mínimos'].items():
             for sensor, _ in zip(data, [1, 5, 9, 13]):
                 value = self.controller.data.stride_angle[sensor]
-                create_label(self.stride_view_pop_win_rightc_frame, str(value), self.REGULAR_FONT, self.CELADON_GREEN, row=2, col=col_mapping[sensor], colspan=4, justify=tk.CENTER)
+                create_label(self.stride_view_pop_win_rightc_frame, str(value), self.REGULAR_FONT, self.CELADON_GREEN, row=row_mapping[sensor], col=col_mapping[sensor], colspan=4, justify=tk.CENTER)
 
         # Insertar datos máximos
         for _, data in data_keys['Máximos'].items():
             for sensor, _ in zip(data, [1, 5, 9, 13]):
                 value = self.controller.data.stride_angle[sensor]
-                create_label(self.stride_view_pop_win_rightc_frame, str(value), self.REGULAR_FONT, self.CELADON_GREEN, row=3, col=col_mapping[sensor], colspan=4, justify=tk.CENTER)
+                create_label(self.stride_view_pop_win_rightc_frame, str(value), self.REGULAR_FONT, self.CELADON_GREEN, row=row_mapping[sensor], col=col_mapping[sensor], colspan=4, justify=tk.CENTER)
     
     def build_metrics_data (self):
         try:

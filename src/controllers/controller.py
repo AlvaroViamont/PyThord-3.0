@@ -349,6 +349,10 @@ class AppController:
                 self.stride_view.stride_view_cd_bar_label.config(width=result)
                 self.stride_view.stride_view_cd_bar_label.config(bg=self._change_label_colors(value))
                 self.stride_view.stride_view_cd_var_label.config(text=f'{value} %')
+        if all(value > 25 for value in self.battery_level.values()):
+            self.stride_view.stride_view_start_collection_buttom.configure(state='normal')
+        else:
+            self.stride_view.show_alert('Bateria Baja', 'Cargue los módulos para continuar')
         return True
     
     def get_conection (self):
@@ -359,7 +363,6 @@ class AppController:
                 time.sleep(2)
                 self.stride_view.stride_view_serial_conection_label.configure(text=f"{self.serial.port}")
                 self.stride_view.stride_view_serial_conection_buttom.configure(text='Desconectar')
-                self.stride_view.stride_view_start_collection_buttom.configure(state='normal')
                 try:
                     self.stride_view.stride_view_top_components_right_canvas.destroy_plot()
                 except:

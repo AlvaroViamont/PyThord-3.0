@@ -173,11 +173,11 @@ class DataController:
         self.stride_angle['MaxCI'] = max(self.stride_raw_data['CISagital'])
         self.stride_angle['MinCI'] = min(self.stride_raw_data['CISagital'])
         
-        self.stride_angle['TMaxRD'] = max(self.stride_transform_data['RDSagital'])
+        self.stride_angle['TMaxRD'] = max(self.stride_transform_data['RDSagital']) - 25
         self.stride_angle['TMinRD'] = min(self.stride_transform_data['RDSagital'])
         self.stride_angle['TMaxCD'] = max(self.stride_transform_data['CDSagital'])
         self.stride_angle['TMinCD'] = min(self.stride_transform_data['CDSagital'])
-        self.stride_angle['TMaxRI'] = max(self.stride_transform_data['RISagital'])
+        self.stride_angle['TMaxRI'] = max(self.stride_transform_data['RISagital']) - 25
         self.stride_angle['TMinRI'] = min(self.stride_transform_data['RISagital'])
         self.stride_angle['TMaxCI'] = max(self.stride_transform_data['CISagital'])
         self.stride_angle['TMinCI'] = min(self.stride_transform_data['CISagital'])

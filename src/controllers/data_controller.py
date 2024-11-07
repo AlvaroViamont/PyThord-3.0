@@ -230,8 +230,8 @@ class DataController:
                 B = self._get_real_angle(A=self.ldata_peaks[i])
                 C = self._get_real_angle(A=A, B=B)
                 ldistance.append(self._get_segment_distance(A=A, C=C, a=size))
-        self.mean_distancel = round(sum(ldistance)/len(ldistance), 2)
-        self.mean_distancer = round(sum(rdistance)/len(rdistance), 2)
+        self.mean_distancel = round(sum(ldistance)/len(ldistance)*1.85, 2)
+        self.mean_distancer = round(sum(rdistance)/len(rdistance)*1.85, 2)
     
     def _get_real_angle (self, A=0, B=90):
         return 180 - abs(A) - abs(B)

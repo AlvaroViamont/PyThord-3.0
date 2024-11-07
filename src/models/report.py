@@ -242,6 +242,9 @@ class PDF(FPDF):
             x_min = 0
             x_max = self.data.data_size*10
             x_ticks = np.arange(x_min, x_max + 50, self.data.data_size)
+            y_min, y_max = plt.ylim()
+            y_ticks = np.arange(y_min - 50, y_max +50, 50)
+            plt.yticks(y_ticks)
             plt.xticks(x_ticks)
             plt.grid(True)
             plt.legend()

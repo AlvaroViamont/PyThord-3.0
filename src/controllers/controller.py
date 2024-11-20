@@ -99,9 +99,9 @@ class AppController:
                     self.patient_view.patient_view_top_frame_user_name_label.configure(text=self.login_user)
                     self.patient_view.build_main_patient_view()
             else:
-                self.user_view.show_error("Login Error", "Incorrect password.")
+                self.user_view.show_error("Login Error", "Password Incorrecto")
         else:
-            self.user_view.show_error("Login Error", "User not found.")
+            self.user_view.show_error("Login Error", "User no encontrado")
         self.user_view.login_view_user_entry.delete(0, tk.END)
         self.user_view.login_view_password_entry.delete(0, tk.END)
     
@@ -111,19 +111,19 @@ class AppController:
         repear_password = self.user_view.register_user_view_repeat_password_entry.get()
         user_data = self.user_db.get_user(user)
         if user == "":
-            self.user_view.show_error("Registration Error", "Empty username")
+            self.user_view.show_error("Erro de Registro", "Nombre de Usuario vacio")
         elif password == "":
-            self.user_view.show_error("Registration Error", "Empty password")
+            self.user_view.show_error("Erro de Registro", "Password vacio")
         elif repear_password == "":
-            self.user_view.show_error("Registration Error", "Empty password confirmation")
-        elif user_data:
-            self.user_view.show_error("Registration Error", "Existing username")
+            self.user_view.show_error("Erro de Registro", "Confirmación de PAssword vacio")
         elif password != repear_password:
-            self.user_view.show_error("Registration Error", "Passwords do not match")
+            self.user_view.show_error("Erro de Registro", "Contraseñas no coinciden")
+        elif user_data:
+            self.user_view.show_error("Erro de Registro", "Nombre de usuario ya existe")
         else:
             key, encrypt_password = nc.encrypt(password)
             self.user_db.create_user(str(key), user, str(encrypt_password))
-            self.user_view.show_info("Successful registration", "A new user has registered")
+            self.user_view.show_info("Registro Exitoso", f"Usuario {user} creado correctamente")
         self.user_view.register_user_view_user_name_entry.delete(0, tk.END)
         self.user_view.register_user_view_new_password_entry.delete(0, tk.END)
         self.user_view.register_user_view_repeat_password_entry.delete(0, tk.END)
@@ -139,11 +139,11 @@ class AppController:
         repeat = self.user_view.register_user_view_update_repeat_password_entry.get()
         if password != "" and repeat != "":
             if password == repeat:
-                conf = self.user_view.ask_yes_no("Actualiza contraseña", "Esta seguro que quiere actualizar contraseña")
+                conf = self.user_view.ask_yes_no("Actualiza contraseña", "¿Está seguro que quiere actualizar la contraseña?")
                 if conf:
                     key, encrypt_password = nc.encrypt(password)
                     self.user_db.update_password(str(key), user, str(encrypt_password))
-                    self.user_view.show_info("Registro Exitoso", "Se hizo el cambio de contraseña de forma correcta.")
+                    self.user_view.show_info("Cambio Exitoso", "Se hizo el cambio de contraseña de forma correcta.")
             else:
                 self.user_view.show_error("Error", "Campos No Coinciden")
         else:
@@ -182,26 +182,26 @@ class AppController:
             return (False, 'Error', 'CI ya existe')
         day = self.patient_view.patient_view_patient_birthdate_day_entry.get()
         if day == '':
-            return (False, 'Error', 'FECH vacio')
+            return (False, 'Error', 'Agregue un día válido')
         month = self.patient_view.patient_view_patient_birthdate_month_entry.get()
         if month == '':
-            return (False, 'Error', 'Empty Month Entry')
+            return (False, 'Error', 'Agregue un mes válido')
         year = self.patient_view.patient_view_patient_birthdate_year_entry.get()
         if year == '':
-            return (False, 'Error', 'Empty Year Entry')
+            return (False, 'Error', 'Agregue un año válido')
         name = self.patient_view.patient_view_patient_name_entry.get()
         if name == '':
-            return (False, 'Error', 'Empty Name Entry')
+            return (False, 'Error', 'Agregue un nombre')
         last_name = self.patient_view.patient_view_patient_lastname_entry.get()
         if last_name == '':
-            return (False, 'Error', 'Empty Lastname Entry')
+            return (False, 'Error', 'Agregue apellido(s)')
         vgender = self.patient_view.patient_view_check_var.get()
         if vgender == 1:
             gender = 'M'
         elif vgender == 2:
             gender = 'F'
         else:
-            return (False, 'Error', 'No Gender Selected')
+            return (False, 'Error', 'Seleccione uno de los géneros')
         full_name = ' '.join((name, last_name))
         phone = self.patient_view.patient_view_patient_phone_entry.get()
         mail = self.patient_view.patient_view_patient_mail_entry.get()
@@ -213,9 +213,9 @@ class AppController:
             self.patient_db.create_patient(int(ci), name, last_name, date, gender, phone, mail, right_leg_size, left_leg_size)
             folder = create_patient_structure(ci)
             self.patient.update_patient(ci=int(ci), name=full_name, birthday=date, age=age, gender=gender, phone=phone, mail=mail, right_leg_size=right_leg_size, left_leg_size=left_leg_size, folder_path=folder)
-            return (True, 'Success', 'Patient Registered Successfully')
+            return (True, 'Éxito', f'Paciente {full_name} creado con éxito')
         except:
-            return (True, 'Error', 'Could Not Register Patient')
+            return (True, 'Error', 'No se pudo registrar el paciente')
     
     def age_calculator (self, date):
         birthdate = datetime.strptime(date, "%d/%m/%Y")
@@ -262,11 +262,11 @@ class AppController:
         if result == 's':
             delete_patient_structure(str(self.patient.ci))
             self.patient.clear_patient()
-            return (True, 'Success', 'Patient Deleted Successfully')
+            return (True, 'Éxito', 'Paciente eliminado correctamente')
         elif result == 'e1':
-            return (False, 'Error', 'Could Not Deleted Patient')
+            return (False, 'Error', 'No se pudo eliminar el paciente')
         elif result == 'e2':
-            return (False, 'Error', 'The Patient Does Not Exist')
+            return (False, 'Error', 'El paciente que esta trantando de eliminar no existe')
     
     def update_patient (self):
         phone = self.patient_view.patient_search_focus_phone_entry.get()
@@ -276,11 +276,11 @@ class AppController:
         status = self.patient_db.update_patient(self.patient.ci, PATIENT_PHONE=phone, PATIENT_MAIL=mail, PATIENT_RSIZE=rsize, PATIENT_LSIZE=lsize)
         self.patient.update_patient(phone=phone, mail=mail, right_leg_size=rsize, left_leg_size=lsize)
         if status == 's':
-            return (True, 'Success', 'Patient Update Successfully')
+            return (True, 'Éxito', 'Paciente actualizado')
         elif status == 'e1':
-            return (False, 'Error', 'Could Not Update Patient')
+            return (False, 'Error', 'No se pudo actualizar el paciente')
         elif status == 'e2':
-            return (False, 'Error', 'The Patient Does Not Exist')
+            return (False, 'Error', 'El paciente que esta trantando de modificar no existe')
     
     def open_patient_folder (self):
         open_patient_folder (str(self.patient.ci))

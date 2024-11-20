@@ -224,7 +224,7 @@ class Analytic_View (General_View):
             pass
     
     def save_stride_view (self):
-        if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos y generar reporte?'):
+        if self.ask_yes_no('Advertencia', '¿Está seguro de guardar los datos y generar reporte?'):
             self.controller.save_raw_stride()
             self.controller.make_report_pdf()
     

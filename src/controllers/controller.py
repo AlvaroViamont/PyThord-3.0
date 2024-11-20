@@ -382,6 +382,7 @@ class AppController:
             self.stride_view.stride_view_serial_conection_label.configure(text="Sin Conexión")
             self.stride_view.stride_view_serial_conection_buttom.configure(text='Conectar')
             self.stride_view.stride_view_start_collection_buttom.configure(state='disabled')
+            self.stride_view.stride_view_start_collection_buttom.configure(text='Iniciar')
             self.serial.disconect()
             self.data.clear()
             self.connection_status = True

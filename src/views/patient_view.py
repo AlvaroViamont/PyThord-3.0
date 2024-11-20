@@ -212,7 +212,7 @@ class Patient_View (General_View):
     def create_buttom (self):
         create_patient = self.controller.create_new_patient()
         if create_patient[0]:
-            if create_patient[1] == 'Success':
+            if create_patient[1] == 'Éxito':
                 self.show_info(create_patient[1], create_patient[2])
                 self.build_search_patient_view()
                 self.patient_search_view_top_entry.delete(0, tk.END)
@@ -334,9 +334,9 @@ class Patient_View (General_View):
                 self.patient_search_view_conteiner_frame.update_idletasks()
                 self.patient_search_view_conteiner_canvas.config(scrollregion=self.patient_search_view_conteiner_canvas.bbox("all"))
             else:
-                self.show_error('Search Error', 'No patient was found')
+                self.show_error('Error', 'Paciente no encontrado')
         else:
-            self.show_error('Error', 'Empty CI')
+            self.show_error('Error', 'Campo de CI vacio')
     
     def focus_patient_list (self, ci):
         self.patient_search_view_top_entry.delete(0, tk.END)
@@ -371,7 +371,7 @@ class Patient_View (General_View):
     
     def build_delete_patient_view (self):
         if self.patient_search_delete_buttom['text'] == 'Eliminar':
-            res = self.ask_yes_no('Delete Patient', 'Are you sure you want to delete this patient?')
+            res = self.ask_yes_no('Advertencia', '¿Está seguro que quiere eliminar el paciente?')
             if res:
                 delete = self.controller.delete_patient()
                 if delete[0]:

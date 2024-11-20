@@ -224,7 +224,7 @@ class Analytic_View (General_View):
             pass
     
     def save_stride_view (self):
-        if self.ask_yes_no('Salvar datos de Zancasa', '¿Está seguro de guardar los datos y generar reporte?'):
+        if self.ask_yes_no('Advertencia', '¿Está seguro de guardar los datos y generar reporte?'):
             self.controller.save_raw_stride()
             self.controller.make_report_pdf()
     
@@ -287,22 +287,22 @@ class Analytic_View (General_View):
             return label
 
         # Encabezados principales
-        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Derecha Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=0, col=1, colspan=8, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Derecha Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=1, colspan=8, justify=tk.CENTER)
         # Sub-encabezados
-        create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=1, colspan=4, justify=tk.CENTER)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=5, colspan=4, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=2, col=1, colspan=4, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=2, col=5, colspan=4, justify=tk.CENTER)
 
         # Etiquetas de filas para datos mínimos y máximos
-        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=2, col=0, justify=tk.RIGHT)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=3, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=3, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=4, col=0, justify=tk.RIGHT)
         
-        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=4, col=1, colspan=8, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=1, colspan=8, justify=tk.CENTER)
         
-        create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=1, colspan=4, justify=tk.CENTER)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=5, colspan=4, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=6, col=1, colspan=4, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=6, col=5, colspan=4, justify=tk.CENTER)
         
-        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=6, col=0, justify=tk.RIGHT)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=7, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=7, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=8, col=0, justify=tk.RIGHT)
 
         # Datos mínimos y máximos organizados
         data_keys = {
@@ -328,10 +328,10 @@ class Analytic_View (General_View):
             'MinCI': 5, 'MaxCI': 5
         }
         row_mapping = {
-            'MinRD': 2, 'MaxRD': 3,
-            'MinCD': 2, 'MaxCD': 3,
-            'MinRI': 6, 'MaxRI': 7,
-            'MinCI': 6, 'MaxCI': 7
+            'MinRD': 3, 'MaxRD': 4,
+            'MinCD': 3, 'MaxCD': 4,
+            'MinRI': 7, 'MaxRI': 8,
+            'MinCI': 7, 'MaxCI': 8
         }
 
         # Insertar datos mínimos

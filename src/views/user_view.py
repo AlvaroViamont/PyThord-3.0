@@ -122,7 +122,7 @@ class User_View (General_View):
         self.widget_grid_forget(self.register_user_view_search_bottom_frame)
         user = self.register_user_view_search_user_name_entry.get()
         if user == "":
-            self.show_error("Error", "Empty username")
+            self.show_error("Error", "Nombre de usuario vacio")
         else:
             user_data = self.controller.user_db.get_user(user)
             if user_data:
@@ -135,14 +135,14 @@ class User_View (General_View):
                 elif self.controller.login_user == 'user':
                     self.register_user_view_user_info_delete_user_buttom.grid(column=2, columnspan=2, row=1, padx=10, ipady=10, pady=10, sticky='W')
             else:
-                self.show_error("Error", "User not found.")
+                self.show_error("Error", "Usuario no encontrado")
             self.register_user_view_search_user_name_entry.delete(0, tk.END)
     
     def update_delete_unknown_user_view_buttom (self, user):
         self.register_user_view_search_bottom_frame.pack(side='bottom', fill='both', expand=True)
         self.widget_grid_forget(self.register_user_view_search_bottom_frame)
         if user == "":
-            self.show_error("Error", "Empty username")
+            self.show_error("Error", "Nombre de usuario vacio")
         else:
             user_data = self.controller.user_db.get_user(user)
             if user_data:
@@ -155,7 +155,7 @@ class User_View (General_View):
                 elif self.controller.login_user == 'user':
                     self.register_user_view_user_info_delete_user_buttom.grid(column=2, columnspan=2, row=1, padx=10, ipady=10, pady=10, sticky='W')
             else:
-                self.show_error("Error", "User not found.")
+                self.show_error("Error", "Usuario no encontrado")
             self.register_user_view_search_user_name_entry.delete(0, tk.END)
     
     def search_all_users_buttom (self):
@@ -169,7 +169,7 @@ class User_View (General_View):
                 user_buttom.grid(column=0, columnspan=2, row=c, padx=10, ipady=10, pady=10, sticky='E')
                 c = c + 1
         else:
-            self.show_error("Error", "Users not found.")
+            self.show_error("Error", "Usuario no encontrado")
         self.register_user_view_search_user_name_entry.delete(0, tk.END)
     
     def update_password_widget_buttom (self):

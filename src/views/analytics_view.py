@@ -374,26 +374,26 @@ class Analytic_View (General_View):
         velocity.grid(column=0, row=3, pady=2, sticky='w', padx=10)
         
         separator1_frame = tk.Frame(self.stride_view_pop_win_rightc_frame, bg=self.CELADON_GREEN)
-        separator1_frame.grid(column=0, row=6, columnspan=17, pady=5, ipady=5)
+        separator1_frame.grid(column=0, row=4, columnspan=17, pady=5, ipady=5)
         
         rtime_text = f'Tiempo Promedio Zancasa Derecha: {self.controller.patient.right_time} segundos'
         rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
-        rtime.grid(column=0, row=4, pady=2, sticky='w', padx=10)
+        rtime.grid(column=0, row=5, pady=2, sticky='w', padx=10)
         
         ltime_text = f'Tiempo Promedio Zancasa Izquierda: {self.controller.patient.left_time} segundos'
         ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
-        ltime.grid(column=0, row=5, pady=2, sticky='w', padx=10)
+        ltime.grid(column=0, row=6, pady=2, sticky='w', padx=10)
         
         separator2_frame = tk.Frame(self.stride_view_pop_win_rightc_frame, bg=self.CELADON_GREEN)
-        separator2_frame.grid(column=0, row=6, columnspan=17, pady=5, ipady=5)
+        separator2_frame.grid(column=0, row=7, columnspan=17, pady=5, ipady=5)
         
         rtime_text = f'Promedio Zancasa Derecha: {self.controller.patient.mean_distancer} metros'
         rtime = tk.Label(self.stride_view_pop_win_rightc_frame, text=rtime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
-        rtime.grid(column=0, row=6, pady=2, sticky='w', padx=10)
+        rtime.grid(column=0, row=8, pady=2, sticky='w', padx=10)
         
         ltime_text = f'Promedio Zancasa Izquierda: {self.controller.patient.mean_distancel} metros'
         ltime = tk.Label(self.stride_view_pop_win_rightc_frame, text=ltime_text, foreground=self.ONYX, font=self.REGULAR_FONT, bg=self.CELADON_GREEN, justify=tk.LEFT)
-        ltime.grid(column=0, row=7, pady=2, sticky='w', padx=10)
+        ltime.grid(column=0, row=9, pady=2, sticky='w', padx=10)
     
     def generate_grafic (self):
         try:

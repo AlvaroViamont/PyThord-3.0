@@ -74,7 +74,7 @@ class Analytic_View (General_View):
         self.stride_view_battery_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.ONYX)
         self.stride_view_battery_separator = ttk.Separator(self.stride_view_battery_frame, orient='horizontal', style='top.TSeparator')
         
-        self.stride_view_battery_tittle = tk.Label(self.stride_view_components_left_frame, text='% Carga de Baterias:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
+        self.stride_view_battery_tittle = tk.Label(self.stride_view_components_left_frame, text='% Carga de Baterías:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
         
         self.max_widht = 24
         self.rd_int_var = tk.IntVar()

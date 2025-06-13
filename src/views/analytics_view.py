@@ -74,6 +74,8 @@ class Analytic_View (General_View):
         self.stride_view_battery_frame = tk.Frame(self.stride_view_components_left_frame, bg=self.ONYX)
         self.stride_view_battery_separator = ttk.Separator(self.stride_view_battery_frame, orient='horizontal', style='top.TSeparator')
         
+        self.stride_view_battery_tittle = tk.Label(self.stride_view_components_left_frame, text='% Carga de Baterias:', foreground=self.ANTI_FLASH_WHITE, font=self.BLACK_REGULAR_FONT, bg=self.ONYX, justify=tk.LEFT)
+        
         self.max_widht = 24
         self.rd_int_var = tk.IntVar()
         self.rd_int_var.set(10)
@@ -174,22 +176,24 @@ class Analytic_View (General_View):
         self.stride_view_battery_frame.grid(column=0, row=5, columnspan=3, pady=20, sticky='we')
         self.stride_view_battery_separator.pack(side=tk.BOTTOM, fill='x', expand=True)
 
-        self.stride_view_rd_frame.grid(column=0, row=6, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_battery_tittle.grid(column=0, row=6, columnspan=2, padx=5, pady=10, sticky='w')
+        
+        self.stride_view_rd_frame.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
         self.stride_view_rd_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_rd_bar_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_rd_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
 
-        self.stride_view_ri_frame.grid(column=0, row=7, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_ri_frame.grid(column=0, row=8, columnspan=2, padx=5, pady=10, sticky='w')
         self.stride_view_ri_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_ri_bar_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_ri_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
 
-        self.stride_view_cd_frame.grid(column=0, row=8, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_cd_frame.grid(column=0, row=9, columnspan=2, padx=5, pady=10, sticky='w')
         self.stride_view_cd_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_cd_bar_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_cd_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)
         
-        self.stride_view_ci_frame.grid(column=0, row=9, columnspan=2, padx=5, pady=10, sticky='w')
+        self.stride_view_ci_frame.grid(column=0, row=10, columnspan=2, padx=5, pady=10, sticky='w')
         self.stride_view_ci_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_ci_bar_label.pack(side=tk.LEFT, anchor='w')
         self.stride_view_ci_var_label.pack(side=tk.RIGHT, anchor='e', ipadx=10)

@@ -284,29 +284,32 @@ class Analytic_View (General_View):
         title_label = tk.Label(self.stride_view_pop_win_rightc_frame, text='Valores mínimos y máximos', foreground=self.ONYX, font=self.SUB_TITLE_FONT, bg=self.CELADON_GREEN, justify=tk.CENTER, padx=5)
         title_label.grid(column=0, row=0, columnspan=17, pady=5, ipady=5)
 
-        def create_label(frame, text, font, bg, row, col, colspan=1, pady=2, justify=tk.LEFT):
+        def create_label(frame, text, font, bg, row, col, colspan=1, pady=2, justify=tk.LEFT, space=0):
             """Auxiliary function to create and place labels"""
             label = tk.Label(frame, text=text, foreground=self.ONYX, font=font, bg=bg, justify=justify)
-            label.grid(row=row, column=col, columnspan=colspan, pady=pady)
+            if space == 0:
+                label.grid(row=row, column=col, columnspan=colspan, pady=pady)
+            else:
+                label.grid(row=row, column=col, columnspan=colspan, pady=pady+10)
             return label
 
         # Encabezados principales
-        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Derecha Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=1, colspan=8, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Derecha Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=1, col=1, colspan=8, justify=tk.CENTER, space=1)
         # Sub-encabezados
         create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=2, col=1, colspan=4, justify=tk.CENTER)
         create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=2, col=5, colspan=4, justify=tk.CENTER)
 
         # Etiquetas de filas para datos mínimos y máximos
-        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=3, col=0, justify=tk.RIGHT)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=4, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos:', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=3, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos:', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=4, col=0, justify=tk.RIGHT)
         
-        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=1, colspan=8, justify=tk.CENTER)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=5, col=1, colspan=8, justify=tk.CENTER, space=1)
         
         create_label(self.stride_view_pop_win_rightc_frame, 'Rodilla', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=6, col=1, colspan=4, justify=tk.CENTER)
         create_label(self.stride_view_pop_win_rightc_frame, 'Cadera', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=6, col=5, colspan=4, justify=tk.CENTER)
         
-        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=7, col=0, justify=tk.RIGHT)
-        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=8, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Mínimos:', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=7, col=0, justify=tk.RIGHT)
+        create_label(self.stride_view_pop_win_rightc_frame, 'Máximos:', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=8, col=0, justify=tk.RIGHT)
 
         # Datos mínimos y máximos organizados
         data_keys = {

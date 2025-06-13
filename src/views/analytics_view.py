@@ -285,8 +285,6 @@ class Analytic_View (General_View):
         title_label.grid(column=0, row=0, columnspan=17, pady=5, ipady=5)
         separator1_frame = tk.Frame(self.stride_view_pop_win_rightc_frame, bg=self.CELADON_GREEN)
         separator1_frame.grid(column=0, row=1, columnspan=17, pady=5, ipady=5)
-        separator1 = ttk.Separator(separator1_frame, orient='horizontal', style='top.TSeparator')
-        separator1.pack(side=tk.LEFT, anchor='w', fill='y')
         
         def create_label(frame, text, font, bg, row, col, colspan=1, pady=2, justify=tk.LEFT):
             """Auxiliary function to create and place labels"""
@@ -306,8 +304,6 @@ class Analytic_View (General_View):
         
         separator2_frame = tk.Frame(self.stride_view_pop_win_rightc_frame, bg=self.CELADON_GREEN)
         separator2_frame.grid(column=0, row=6, columnspan=17, pady=5, ipady=5)
-        separator2 = ttk.Separator(separator1_frame, orient='horizontal', style='top.TSeparator')
-        separator2.pack(side=tk.LEFT, anchor='w', fill='y')
         
         create_label(self.stride_view_pop_win_rightc_frame, 'Pierna Izquierda Sagital', self.BLACK_REGULAR_FONT, self.CELADON_GREEN, row=7, col=1, colspan=8, justify=tk.CENTER)
         
